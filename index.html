@@ -71,26 +71,27 @@
             background: var(--primary-light);
         }
 
-        /* Notification System */
+        /* Notification System - MODIFIED POSITION */
         .notification {
             position: fixed;
             top: 24px;
-            right: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
             padding: 1rem 1.5rem;
             border-radius: var(--border-radius);
             background: linear-gradient(135deg, var(--success) 0%, var(--success-dark) 100%);
             color: white;
             box-shadow: var(--shadow-xl);
             z-index: 10000;
-            transform: translateX(400px);
             transition: var(--transition);
             max-width: 380px;
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
         }
 
         .notification.show {
-            transform: translateX(0);
+            transform: translateX(-50%) translateY(0);
         }
 
         .notification.info {
@@ -220,6 +221,22 @@
     background: var(--dark-surface-light);
     border-radius: var(--border-radius);
 }
+/* Tambahkan di section CSS */
+.btn-copy {
+    background: linear-gradient(135deg, var(--info) 0%, var(--info-dark) 100%);
+}
+
+.btn-copy:hover {
+    background: linear-gradient(135deg, #60a5fa 0%, var(--info) 100%);
+}
+
+.btn-paid {
+    background: linear-gradient(135deg, var(--success) 0%, var(--success-dark) 100%);
+}
+
+.btn-paid:hover {
+    background: linear-gradient(135deg, #34d399 0%, var(--success) 100%);
+}
 
 .detail-section h4 {
     margin-bottom: 1rem;
@@ -244,6 +261,15 @@
 .detail-value {
     color: var(--text-primary);
     text-align: right;
+}
+
+/* Tambahkan di section CSS */
+.btn-info {
+    background: linear-gradient(135deg, var(--info) 0%, var(--info-dark) 100%);
+}
+
+.btn-info:hover {
+    background: linear-gradient(135deg, #60a5fa 0%, var(--info) 100%);
 }
 
 .items-table {
@@ -1781,6 +1807,9 @@
                 <div class="header">
                     <h1>Pemesanan</h1>
                     <div class="user-info">
+                        <button class="btn btn-info" id="copy-all-pending-btn">
+                            <i class="fas fa-copy"></i> Copy Semua Pending
+                        </button>
                         <button class="btn btn-primary" id="buat-pesanan-btn">
                             <i class="fas fa-plus"></i> Buat Pesanan
                         </button>
@@ -2549,6 +2578,225 @@
             modal.classList.add('active');
         }
 
+        // ===============================
+// NEW FUNCTIONS FOR PAYMENT AND COPY FEATURES
+// ===============================
+
+// Fungsi untuk menandai pesanan sudah dibayar lunas
+function markPesananAsPaid(pesananId) {
+    if (!isAdmin) {
+        showNotification('Hanya admin yang dapat menandai pesanan sudah dibayar!', 'error');
+        return;
+    }
+    
+    const pesanan = pesananData.find(p => p.id === pesananId);
+    if (!pesanan) return;
+    
+    showConfirmation(
+        `Tandai pesanan ${pesanan.id} sebagai LUNAS?
+            Customer: ${pesanan.customer}
+            Total: ${formatDollar(pesanan.total)}
+            Uang dibayar akan disesuaikan menjadi ${formatDollar(pesanan.total)}`,
+        function() {
+            // Update status menjadi lunas dengan uang dibayar sama dengan total
+            database.ref('pesanan/' + pesananId).update({
+                status_pembayaran: 'lunas',
+                uang_dibayar: pesanan.total,
+                status: 'lunas'
+            })
+            .then(() => {
+                showNotification(`Pesanan ${pesanan.id} berhasil ditandai sebagai LUNAS!`, 'success');
+                closeModal('detail-pesanan-modal');
+                
+                // Jika ada transaksi terkait, update juga
+                addTransaksiFromPesanan(pesanan);
+            })
+            .catch(error => {
+                showNotification('Gagal memperbarui status pembayaran: ' + error.message, 'error');
+            });
+        },
+        'warning'
+    );
+}
+
+// Fungsi untuk menambahkan transaksi dari pesanan yang sudah dibayar
+function addTransaksiFromPesanan(pesanan) {
+    const newTransaksi = {
+        jenis: 'pemasukan',
+        jumlah: pesanan.total,
+        keterangan: `Pembayaran pesanan ${pesanan.id} dari ${pesanan.customer}`,
+        tanggal: new Date().toISOString().split('T')[0],
+        created_at: new Date().toISOString(),
+        related_pesanan: pesanan.id
+    };
+    
+    // Save to Firebase
+    database.ref('transaksi').push(newTransaksi)
+        .then(() => {
+            console.log('✅ Transaksi pembayaran berhasil ditambahkan');
+        })
+        .catch(error => {
+            console.error('❌ Gagal menambah transaksi pembayaran:', error);
+        });
+}
+
+// ===============================
+// NEW FUNCTION FOR COPY ALL PENDING ORDERS
+// ===============================
+
+// Fungsi untuk menyalin semua item dari pesanan yang belum diproses
+function copyAllPendingOrders() {
+    // Filter pesanan yang belum diproses (belum dikasih)
+    const pendingPesanan = pesananData.filter(p => !p.sudah_dikasih);
+    
+    if (pendingPesanan.length === 0) {
+        showNotification('Tidak ada pesanan yang belum diproses!', 'info');
+        return;
+    }
+    
+    // Gabungkan semua items dari pesanan pending
+    const allItems = [];
+    
+    pendingPesanan.forEach(pesanan => {
+        pesanan.items.forEach(item => {
+            // Cek apakah item sudah ada di allItems
+            const existingItem = allItems.find(i => i.nama === item.nama);
+            
+            if (existingItem) {
+                // Jika sudah ada, tambahkan quantity
+                existingItem.quantity += item.quantity;
+            } else {
+                // Jika belum ada, tambahkan item baru
+                allItems.push({
+                    nama: item.nama,
+                    quantity: item.quantity
+                });
+            }
+        });
+    });
+    
+    if (allItems.length === 0) {
+        showNotification('Tidak ada items dalam pesanan pending!', 'info');
+        return;
+    }
+    
+    // Format teks untuk disalin
+    let itemsText = `ITEMS PESANAN PENDING (${pendingPesanan.length} pesanan)\n\n`;
+    
+    allItems.forEach((item, index) => {
+        itemsText += `${item.nama} - ${item.quantity}x\n`;
+    });
+    
+    // Tambahkan ringkasan
+    itemsText += `\n-------------------\n`;
+    itemsText += `Total Items: ${allItems.length} jenis\n`;
+    itemsText += `Total Pesanan: ${pendingPesanan.length} pesanan`;
+    
+    // Salin ke clipboard
+    navigator.clipboard.writeText(itemsText)
+        .then(() => {
+            showNotification(`Berhasil menyalin ${allItems.length} items dari ${pendingPesanan.length} pesanan pending!`, 'success');
+        })
+        .catch(err => {
+            console.error('Gagal menyalin teks: ', err);
+            fallbackCopyTextToClipboard(itemsText);
+        });
+}
+
+// Versi alternatif jika ingin format yang lebih sederhana
+function copyAllPendingOrdersSimple() {
+    const pendingPesanan = pesananData.filter(p => !p.sudah_dikasih);
+    
+    if (pendingPesanan.length === 0) {
+        showNotification('Tidak ada pesanan yang belum diproses!', 'info');
+        return;
+    }
+    
+    const allItems = [];
+    
+    pendingPesanan.forEach(pesanan => {
+        pesanan.items.forEach(item => {
+            const existingItem = allItems.find(i => i.nama === item.nama);
+            if (existingItem) {
+                existingItem.quantity += item.quantity;
+            } else {
+                allItems.push({
+                    nama: item.nama,
+                    quantity: item.quantity
+                });
+            }
+        });
+    });
+    
+    if (allItems.length === 0) {
+        showNotification('Tidak ada items dalam pesanan pending!', 'info');
+        return;
+    }
+    
+    // Format sederhana hanya items dan quantity
+    let itemsText = ``;
+    
+    allItems.forEach(item => {
+        itemsText += `${item.nama} - ${item.quantity}x\n`;
+    });
+    
+    navigator.clipboard.writeText(itemsText)
+        .then(() => {
+            showNotification(`Berhasil menyalin ${allItems.length} items!`, 'success');
+        })
+        .catch(err => {
+            console.error('Gagal menyalin teks: ', err);
+            fallbackCopyTextToClipboard(itemsText);
+        });
+}
+
+// Fungsi untuk menyalin items pesanan ke clipboard
+function copyPesananItems(pesanan) {
+    // Format teks untuk disalin - HANYA ITEM DAN QUANTITY
+    let itemsText = ``;
+    
+    pesanan.items.forEach((item, index) => {
+        itemsText += `${item.nama} - ${item.quantity}x\n`;
+    });
+    
+    // Salin ke clipboard
+    navigator.clipboard.writeText(itemsText)
+        .then(() => {
+            showNotification('Items pesanan berhasil disalin ke clipboard!', 'success');
+        })
+        .catch(err => {
+            console.error('Gagal menyalin teks: ', err);
+            // Fallback untuk browser yang tidak support clipboard API
+            fallbackCopyTextToClipboard(itemsText);
+        });
+}
+
+        // Fallback untuk menyalin teks (untuk browser lama)
+        function fallbackCopyTextToClipboard(text) {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            textArea.style.top = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showNotification('Items pesanan berhasil disalin ke clipboard!', 'success');
+                } else {
+                    showNotification('Gagal menyalin items pesanan!', 'error');
+                }
+            } catch (err) {
+                console.error('Fallback copy gagal: ', err);
+                showNotification('Gagal menyalin items pesanan!', 'error');
+            }
+            
+            document.body.removeChild(textArea);
+        }
+
         // Hide confirmation modal
         function hideConfirmation() {
             document.getElementById('confirmation-modal').classList.remove('active');
@@ -2642,6 +2890,7 @@
             document.getElementById('login-form').addEventListener('submit', handleLogin);
             document.getElementById('public-access-btn').addEventListener('click', handlePublicAccess);
             
+            
             // Navigation
             document.querySelectorAll('.nav-link').forEach(link => {
                 link.addEventListener('click', function(e) {
@@ -2664,6 +2913,10 @@
                 showModal('tambah-barang-modal');
             });
 
+             document.getElementById('copy-all-pending-btn').addEventListener('click', function() {
+                copyAllPendingOrders();
+            });
+
             document.getElementById('tambah-transaksi-btn').addEventListener('click', function() {
                 showModal('tambah-transaksi-modal');
             });
@@ -2678,6 +2931,14 @@
 
             document.getElementById('kembali-pesanan-btn').addEventListener('click', function() {
                 showPage('pemesanan');
+            });
+
+            document.getElementById('copy-items-btn').addEventListener('click', function() {
+                // Handler sudah diatur di viewPesananDetail
+            });
+
+            document.getElementById('mark-paid-btn').addEventListener('click', function() {
+                // Handler sudah diatur di viewPesananDetail
             });
 
             document.getElementById('kosongkan-keranjang-btn').addEventListener('click', function() {
@@ -2843,7 +3104,7 @@
             const password = document.getElementById('password').value;
             
             // Simulasi login admin
-            if (email === 'admin@brangkas.com' && password === 'admin123') {
+            if (email === 'dsg@brangkas.com' && password === 'dsgjaya') {
                 currentUser = { email: email, name: 'Administrator' };
                 isAdmin = true;
                 
@@ -4374,8 +4635,7 @@ function kosongkanKeranjang() {
     );
 }
 
-// View pesanan detail dengan modal - MODIFIED dengan info pembayaran
-// View pesanan detail dengan modal - MODIFIED dengan info pembayaran
+// View pesanan detail dengan modal - MODIFIED dengan tombol baru
 function viewPesananDetail(pesananId) {
     const pesanan = pesananData.find(p => p.id === pesananId);
     if (!pesanan) {
@@ -4533,7 +4793,30 @@ function viewPesananDetail(pesananId) {
         </div>
     `;
     
-    // Tambahkan tombol aksi hanya untuk admin
+    // Tampilkan modal
+    document.getElementById('detail-pesanan-content').innerHTML = detailHtml;
+    
+    // Setup tombol aksi
+    const copyItemsBtn = document.getElementById('copy-items-btn');
+    const markPaidBtn = document.getElementById('mark-paid-btn');
+    
+    // Tampilkan tombol salin items untuk semua pesanan
+    copyItemsBtn.style.display = 'inline-flex';
+    copyItemsBtn.onclick = function() {
+        copyPesananItems(pesanan);
+    };
+    
+    // Tampilkan tombol tandai sudah dibayar hanya untuk admin dan pesanan yang belum lunas
+    if (isAdmin && (pesanan.status_pembayaran !== 'lunas' || pesanan.uang_dibayar < pesanan.total)) {
+        markPaidBtn.style.display = 'inline-flex';
+        markPaidBtn.onclick = function() {
+            markPesananAsPaid(pesanan.id);
+        };
+    } else {
+        markPaidBtn.style.display = 'none';
+    }
+    
+    // Tambahkan tombol aksi lainnya hanya untuk admin
     if (isAdmin && !pesanan.sudah_dikasih) {
         detailHtml += `
             <div class="detail-section">
@@ -4550,8 +4833,6 @@ function viewPesananDetail(pesananId) {
         `;
     }
     
-    // Tampilkan modal
-    document.getElementById('detail-pesanan-content').innerHTML = detailHtml;
     showModal('detail-pesanan-modal');
 }
 
@@ -4609,7 +4890,7 @@ function viewPesananDetail(pesananId) {
             console.log('🚀 Brangkas System initialized with AUTO REFRESH REAL-TIME');
         });
     </script>
-    <!-- Modal Detail Pesanan -->
+    <!-- Modal Detail Pesanan - MODIFIED -->
     <div class="modal" id="detail-pesanan-modal">
         <div class="modal-content" style="max-width: 600px;">
             <div class="modal-header">
@@ -4623,10 +4904,20 @@ function viewPesananDetail(pesananId) {
                     <!-- Konten detail pesanan akan diisi oleh JavaScript -->
                 </div>
             </div>
-            <div class="modal-footer" style="padding: 1.5rem; border-top: 1px solid var(--dark-surface-light); text-align: right;">
-                <button class="btn btn-primary" onclick="closeModal('detail-pesanan-modal')">
-                    <i class="fas fa-times"></i> Tutup
-                </button>
+            <div class="modal-footer" style="padding: 1.5rem; border-top: 1px solid var(--dark-surface-light); display: flex; justify-content: space-between; align-items: center;">
+                <div class="footer-actions-left">
+                    <button class="btn btn-copy" id="copy-items-btn" style="display: none;">
+                        <i class="fas fa-copy"></i> Salin Items
+                    </button>
+                </div>
+                <div class="footer-actions-right">
+                    <button class="btn btn-paid" id="mark-paid-btn" style="display: none;">
+                        <i class="fas fa-money-bill-wave"></i> Tandai Sudah Dibayar
+                    </button>
+                    <button class="btn btn-primary" onclick="closeModal('detail-pesanan-modal')">
+                        <i class="fas fa-times"></i> Tutup
+                    </button>
+                </div>
             </div>
         </div>
     </div>
