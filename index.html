@@ -129,77 +129,77 @@
         }
 
         /* Dashboard Bendahara Styles */
-.bendahara-stats {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-    margin-bottom: 2rem;
-}
+        .bendahara-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
 
-.stat-card {
-    background: var(--dark-surface);
-    padding: 1.5rem;
-    border-radius: var(--border-radius);
-    text-align: center;
-    border-left: 4px solid var(--success);
-}
+        .stat-card {
+            background: var(--dark-surface);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            text-align: center;
+            border-left: 4px solid var(--success);
+        }
 
-.stat-value {
-    font-size: 2rem;
-    font-weight: 800;
-    color: var(--success);
-    margin-bottom: 0.5rem;
-}
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--success);
+            margin-bottom: 0.5rem;
+        }
 
-.stat-label {
-    color: var(--text-secondary);
-    font-size: 0.9rem;
-}
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
 
-.bendahara-summary {
-    background: var(--dark-surface);
-    border-radius: var(--border-radius);
-    padding: 1.5rem;
-    margin-bottom: 2rem;
-    border-left: 4px solid var(--info);
-}
+        .bendahara-summary {
+            background: var(--dark-surface);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--info);
+        }
 
-.summary-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1rem;
-    margin-top: 1rem;
-}
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
 
-.summary-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem;
-    background: var(--dark-surface-light);
-    border-radius: var(--border-radius);
-}
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: var(--dark-surface-light);
+            border-radius: var(--border-radius);
+        }
 
-.summary-item-label {
-    color: var(--text-secondary);
-    font-weight: 500;
-}
+        .summary-item-label {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
 
-.summary-item-value {
-    color: var(--text-primary);
-    font-weight: 700;
-    font-size: 1.2rem;
-}
+        .summary-item-value {
+            color: var(--text-primary);
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
 
-.uang-dikasih-item {
-    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.1) 100%);
-    border-left: 3px solid var(--success);
-}
+        .uang-dikasih-item {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.1) 100%);
+            border-left: 3px solid var(--success);
+        }
 
-.uang-belum-dikasih-item {
-    background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(217, 119, 6, 0.1) 100%);
-    border-left: 3px solid var(--warning);
-}
+        .uang-belum-dikasih-item {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(217, 119, 6, 0.1) 100%);
+            border-left: 3px solid var(--warning);
+        }
 
         /* Style untuk profit display */
         .profit-badge {
@@ -1656,6 +1656,94 @@
             background: linear-gradient(135deg, rgba(100, 116, 139, 0.2) 0%, rgba(71, 85, 105, 0.2) 100%);
             color: var(--text-muted);
             border: 1px solid rgba(100, 116, 139, 0.3);
+        }
+
+        /* Edit Penerima Form Styles */
+        .edit-penerima-form {
+            background: var(--dark-surface-light);
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            margin: 1rem 0;
+            border-left: 3px solid var(--info);
+        }
+
+        .edit-penerima-row {
+            display: flex;
+            gap: 0.5rem;
+            align-items: flex-end;
+        }
+
+        .edit-penerima-input {
+            flex: 1;
+        }
+
+        .edit-penerima-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-edit {
+            background: linear-gradient(135deg, var(--warning) 0%, var(--warning-dark) 100%);
+            color: white;
+            border: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: var(--border-radius-sm);
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: var(--transition-fast);
+        }
+
+        .btn-edit:hover {
+            background: linear-gradient(135deg, #fbbf24 0%, var(--warning) 100%);
+            transform: translateY(-1px);
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, var(--success) 0%, var(--success-dark) 100%);
+            color: white;
+            border: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: var(--border-radius-sm);
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: var(--transition-fast);
+        }
+
+        .btn-save:hover {
+            background: linear-gradient(135deg, #34d399 0%, var(--success) 100%);
+            transform: translateY(-1px);
+        }
+
+        .btn-cancel {
+            background: var(--dark-surface-lighter);
+            color: var(--text-primary);
+            border: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: var(--border-radius-sm);
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: var(--transition-fast);
+        }
+
+        .btn-cancel:hover {
+            background: var(--dark-surface-light);
+            transform: translateY(-1px);
+        }
+
+        .penerima-display {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem;
+            background: var(--dark-surface-light);
+            border-radius: var(--border-radius);
+            margin: 0.5rem 0;
+        }
+
+        .penerima-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         /* Modal */
@@ -3350,7 +3438,7 @@
             navigator.clipboard.writeText(itemsText)
                 .then(() => {
                     showNotification('Items pesanan berhasil disalin ke clipboard!', 'success');
-                })
+                    })
                 .catch(err => {
                     console.error('Gagal menyalin teks: ', err);
                     // Fallback untuk browser yang tidak support clipboard API
@@ -6104,7 +6192,156 @@ function updateLaporanPembayaranTable(pesananLunasBulan) {
             );
         }
 
-        // View pesanan detail dengan modal - MODIFIED dengan checklist barang
+        // ===============================
+        // FUNGSI UNTUK EDIT PENERIMA PEMBAYARAN
+        // ===============================
+
+        // Fungsi untuk render section penerima pembayaran
+        function renderPenerimaSection(pesanan) {
+            if (pesanan.penerima_pembayaran) {
+                return `
+                    <div class="penerima-display">
+                        <div class="penerima-info">
+                            <span class="penerima-badge ${pesanan.uang_diberikan_ke_bendahara ? 'penerima-dibayar' : ''}">
+                                ${pesanan.penerima_pembayaran}
+                                ${pesanan.uang_diberikan_ke_bendahara ? ' ✓' : ''}
+                            </span>
+                        </div>
+                        ${isAdmin ? `
+                        <button class="btn-edit" onclick="showEditPenerimaForm('${pesanan.id}')">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        ` : ''}
+                    </div>
+                `;
+            } else {
+                return `
+                    <div class="penerima-display">
+                        <span style="color: var(--text-muted); font-style: italic;">Belum ada penerima</span>
+                        ${isAdmin ? `
+                        <button class="btn-edit" onclick="showEditPenerimaForm('${pesanan.id}')">
+                            <i class="fas fa-plus"></i> Tambah
+                        </button>
+                        ` : ''}
+                    </div>
+                `;
+            }
+        }
+
+        // Fungsi untuk menampilkan form edit penerima
+        function showEditPenerimaForm(pesananId) {
+            const pesanan = pesananData.find(p => p.id === pesananId);
+            if (!pesanan) return;
+            
+            const formHtml = `
+                <div class="edit-penerima-form">
+                    <div style="margin-bottom: 0.5rem; font-weight: 600; color: var(--text-primary);">
+                        ${pesanan.penerima_pembayaran ? 'Edit Penerima Pembayaran' : 'Tambah Penerima Pembayaran'}
+                    </div>
+                    <div class="edit-penerima-row">
+                        <div class="edit-penerima-input">
+                            <select id="edit-penerima-select-${pesananId}" class="form-control" style="font-size: 0.85rem; padding: 0.4rem;">
+                                <option value="">Pilih Penerima</option>
+                                <option value="Zowed" ${pesanan.penerima_pembayaran === 'Zowed' ? 'selected' : ''}>Zowed</option>
+                                <option value="Asap" ${pesanan.penerima_pembayaran === 'Asap' ? 'selected' : ''}>Asap</option>
+                                <option value="Ruuna" ${pesanan.penerima_pembayaran === 'Ruuna' ? 'selected' : ''}>Ruuna</option>
+                                <option value="Vyan" ${pesanan.penerima_pembayaran === 'Vyan' ? 'selected' : ''}>Vyan</option>
+                                <option value="custom">Custom...</option>
+                            </select>
+                            <input type="text" id="edit-penerima-custom-${pesananId}" 
+                                   class="form-control" 
+                                   style="font-size: 0.85rem; padding: 0.4rem; margin-top: 0.3rem; display: none;" 
+                                   placeholder="Masukkan nama penerima custom">
+                        </div>
+                        <div class="edit-penerima-actions">
+                            <button class="btn-save" onclick="savePenerimaPembayaran('${pesananId}')">
+                                <i class="fas fa-save"></i> Simpan
+                            </button>
+                            <button class="btn-cancel" onclick="cancelEditPenerima('${pesananId}')">
+                                <i class="fas fa-times"></i> Batal
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById(`penerima-display-${pesananId}`).innerHTML = formHtml;
+            
+            // Setup event listener untuk select
+            const selectElement = document.getElementById(`edit-penerima-select-${pesananId}`);
+            const customInput = document.getElementById(`edit-penerima-custom-${pesananId}`);
+            
+            selectElement.addEventListener('change', function() {
+                if (this.value === 'custom') {
+                    customInput.style.display = 'block';
+                    customInput.focus();
+                } else {
+                    customInput.style.display = 'none';
+                }
+            });
+            
+            // Jika sebelumnya sudah ada custom value, tampilkan input
+            if (pesanan.penerima_pembayaran && 
+                !['Zowed', 'Asap', 'Ruuna', 'Vyan'].includes(pesanan.penerima_pembayaran)) {
+                selectElement.value = 'custom';
+                customInput.style.display = 'block';
+                customInput.value = pesanan.penerima_pembayaran;
+            }
+        }
+
+        // Fungsi untuk menyimpan penerima pembayaran
+        function savePenerimaPembayaran(pesananId) {
+            const pesanan = pesananData.find(p => p.id === pesananId);
+            if (!pesanan) return;
+            
+            const selectElement = document.getElementById(`edit-penerima-select-${pesananId}`);
+            const customInput = document.getElementById(`edit-penerima-custom-${pesananId}`);
+            
+            let penerimaValue = '';
+            
+            if (selectElement.value === 'custom') {
+                penerimaValue = customInput.value.trim();
+            } else {
+                penerimaValue = selectElement.value;
+            }
+            
+            if (!penerimaValue) {
+                showNotification('Penerima pembayaran harus diisi!', 'error');
+                return;
+            }
+            
+            // Update ke Firebase
+            database.ref('pesanan/' + pesananId).update({
+                penerima_pembayaran: penerimaValue
+            })
+            .then(() => {
+                showNotification('Penerima pembayaran berhasil diperbarui!', 'success');
+                
+                // Refresh tampilan penerima
+                setTimeout(() => {
+                    const updatedPesanan = pesananData.find(p => p.id === pesananId);
+                    if (updatedPesanan) {
+                        document.getElementById(`penerima-display-${pesananId}`).innerHTML = 
+                            renderPenerimaSection(updatedPesanan);
+                    }
+                }, 500);
+            })
+            .catch(error => {
+                showNotification('Gagal memperbarui penerima pembayaran: ' + error.message, 'error');
+            });
+        }
+
+        // Fungsi untuk membatalkan edit penerima
+        function cancelEditPenerima(pesananId) {
+            const pesanan = pesananData.find(p => p.id === pesananId);
+            if (!pesanan) return;
+            
+            // Kembalikan ke tampilan normal
+            document.getElementById(`penerima-display-${pesananId}`).innerHTML = 
+                renderPenerimaSection(pesanan);
+        }
+
+        // View pesanan detail dengan modal - MODIFIED dengan edit penerima
         function viewPesananDetail(pesananId) {
             const pesanan = pesananData.find(p => p.id === pesananId);
             if (!pesanan) {
@@ -6150,17 +6387,14 @@ function updateLaporanPembayaranTable(pesananLunasBulan) {
                                 </span>
                             </span>
                         </div>
-                        ${pesanan.penerima_pembayaran ? `
+                        
+                        <!-- Bagian Penerima Pembayaran yang bisa diedit -->
                         <div class="info-row">
                             <span class="info-label">Penerima:</span>
-                            <span class="info-value">
-                                <span class="penerima-badge ${pesanan.uang_diberikan_ke_bendahara ? 'penerima-dibayar' : ''}">
-                                    ${pesanan.penerima_pembayaran}
-                                    ${pesanan.uang_diberikan_ke_bendahara ? ' ✓' : ''}
-                                </span>
+                            <span class="info-value" id="penerima-display-${pesanan.id}">
+                                ${renderPenerimaSection(pesanan)}
                             </span>
                         </div>
-                        ` : ''}
                     </div>
 
                     <!-- Progress Bar -->
