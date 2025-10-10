@@ -306,6 +306,63 @@ body, .card, .sidebar, .modal-content, .form-control, .btn {
     transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 
+/* CSS untuk Sistem Cicilan */
+.btn-cicilan {
+    background: linear-gradient(135deg, var(--warning) 0%, var(--warning-dark) 100%);
+    color: white;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: var(--transition-fast);
+}
+
+.btn-cicilan:hover {
+    background: linear-gradient(135deg, #fbbf24 0%, var(--warning) 100%);
+    transform: translateY(-1px);
+}
+
+.badge-cicilan {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(37, 99, 235, 0.2) 100%);
+    color: var(--info);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.cicilan-progress {
+    background: var(--dark-surface-lighter);
+    height: 6px;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 0.5rem;
+}
+
+.cicilan-progress-fill {
+    height: 100%;
+    background: linear-gradient(135deg, var(--info) 0%, var(--info-dark) 100%);
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+.pesanan-cicilan-item {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(37, 99, 235, 0.05) 100%);
+    border-left: 3px solid var(--info);
+}
+
+.status-cicilan {
+    padding: 0.3rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.status-dp {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(37, 99, 235, 0.2) 100%);
+    color: var(--info);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
         /* Notification System */
         .notification {
             position: fixed;
@@ -1046,6 +1103,63 @@ body, .card, .sidebar, .modal-content, .form-control, .btn {
             padding-bottom: 1.5rem;
             border-bottom: 1px solid var(--dark-surface-light);
         }
+
+        /* CSS untuk Sistem Cicilan */
+.btn-cicilan {
+    background: linear-gradient(135deg, var(--warning) 0%, var(--warning-dark) 100%);
+    color: white;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: var(--transition-fast);
+}
+
+.btn-cicilan:hover {
+    background: linear-gradient(135deg, #fbbf24 0%, var(--warning) 100%);
+    transform: translateY(-1px);
+}
+
+.badge-cicilan {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(37, 99, 235, 0.2) 100%);
+    color: var(--info);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.cicilan-progress {
+    background: var(--dark-surface-lighter);
+    height: 6px;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 0.5rem;
+}
+
+.cicilan-progress-fill {
+    height: 100%;
+    background: linear-gradient(135deg, var(--info) 0%, var(--info-dark) 100%);
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+.pesanan-cicilan-item {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(37, 99, 235, 0.05) 100%);
+    border-left: 3px solid var(--info);
+}
+
+.status-cicilan {
+    padding: 0.3rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.status-dp {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(37, 99, 235, 0.2) 100%);
+    color: var(--info);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
 
         /* Checklist Styles */
         .checkbox-container {
@@ -3256,6 +3370,49 @@ body, .card, .sidebar, .modal-content, .form-control, .btn {
         </div>
     </div>
 
+    <!-- Modal Input Pembayaran Cicilan -->
+<div class="modal" id="input-cicilan-modal">
+    <div class="modal-content" style="max-width: 500px;">
+        <div class="modal-header">
+            <div class="modal-title">Input Pembayaran Cicilan</div>
+            <button class="close-modal" onclick="closeModal('input-cicilan-modal')">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div id="cicilan-content">
+                <!-- Konten cicilan akan diisi oleh JavaScript -->
+            </div>
+            <div class="form-group">
+                <label for="jumlah-cicilan">Jumlah Pembayaran ($)</label>
+                <input type="number" id="jumlah-cicilan" class="form-control" placeholder="Masukkan jumlah pembayaran" min="1" required>
+            </div>
+            <div class="form-group">
+                <label for="keterangan-cicilan">Keterangan Pembayaran (Opsional)</label>
+                <textarea id="keterangan-cicilan" class="form-control" placeholder="Tambahkan keterangan pembayaran" rows="2"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="penerima-cicilan">Penerima Pembayaran</label>
+                <select id="penerima-cicilan" class="form-control" required>
+                    <option value="">Pilih Penerima</option>
+                    <option value="Zowed">Zowed</option>
+                    <option value="Asap">Asap</option>
+                    <option value="Ruuna">Ruuna</option>
+                    <option value="Vyan">Vyan</option>
+                </select>
+            </div>
+        </div>
+        <div class="modal-footer" style="padding: 1.5rem; border-top: 1px solid var(--dark-surface-light); display: flex; justify-content: flex-end; gap: 1rem;">
+            <button class="btn btn-secondary" onclick="closeModal('input-cicilan-modal')">
+                <i class="fas fa-times"></i> Batal
+            </button>
+            <button class="btn btn-success" onclick="simpanPembayaranCicilan()">
+                <i class="fas fa-save"></i> Simpan Pembayaran
+            </button>
+        </div>
+    </div>
+</div>
+
     <!-- Modal Tambah Transaksi -->
     <div class="modal" id="tambah-transaksi-modal">
         <div class="modal-content">
@@ -5333,7 +5490,283 @@ function deleteLaporanByPeriod() {
                     saldo - transaksi.jumlah;
             }, 0);
         }
+// Variabel untuk menyimpan ID pesanan yang sedang diproses
+let currentCicilanPesananId = null;
 
+// Fungsi untuk menampilkan modal input cicilan
+function showInputCicilanModal(pesananId) {
+    if (!isAdmin) {
+        showNotification('Hanya admin yang dapat menginput pembayaran cicilan!', 'error');
+        return;
+    }
+    
+    const pesanan = pesananData.find(p => p.id === pesananId);
+    if (!pesanan) {
+        showNotification('Pesanan tidak ditemukan!', 'error');
+        return;
+    }
+    
+    currentCicilanPesananId = pesananId;
+    
+    // Hitung sisa hutang
+    const sisaHutang = pesanan.total - pesanan.uang_dibayar;
+    const persentaseBayar = Math.round((pesanan.uang_dibayar / pesanan.total) * 100);
+    
+    // Isi konten modal
+    const cicilanContent = document.getElementById('cicilan-content');
+    cicilanContent.innerHTML = `
+        <div class="detail-section">
+            <h4>Informasi Pesanan</h4>
+            <div class="info-row">
+                <span class="info-label">ID Pesanan:</span>
+                <span class="info-value">${pesanan.id}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Customer:</span>
+                <span class="info-value">${pesanan.customer}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Total:</span>
+                <span class="info-value">${formatDollar(pesanan.total)}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Sudah Dibayar:</span>
+                <span class="info-value">${formatDollar(pesanan.uang_dibayar)} (${persentaseBayar}%)</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Sisa Hutang:</span>
+                <span class="info-value" style="color: var(--danger); font-weight: 700;">${formatDollar(sisaHutang)}</span>
+            </div>
+        </div>
+        
+        <div class="cicilan-progress">
+            <div class="cicilan-progress-fill" style="width: ${persentaseBayar}%"></div>
+        </div>
+    `;
+    
+    // Reset form
+    document.getElementById('jumlah-cicilan').value = '';
+    document.getElementById('keterangan-cicilan').value = '';
+    document.getElementById('penerima-cicilan').value = '';
+    
+    // Set nilai maksimum untuk input cicilan
+    document.getElementById('jumlah-cicilan').max = sisaHutang;
+    
+    showModal('input-cicilan-modal');
+}
+
+// Fungsi untuk menyimpan pembayaran cicilan
+function simpanPembayaranCicilan() {
+    if (!currentCicilanPesananId) {
+        showNotification('Tidak ada pesanan yang dipilih!', 'error');
+        return;
+    }
+    
+    const pesanan = pesananData.find(p => p.id === currentCicilanPesananId);
+    if (!pesanan) {
+        showNotification('Pesanan tidak ditemukan!', 'error');
+        return;
+    }
+    
+    const jumlahCicilan = parseInt(document.getElementById('jumlah-cicilan').value) || 0;
+    const keteranganCicilan = document.getElementById('keterangan-cicilan').value;
+    const penerimaCicilan = document.getElementById('penerima-cicilan').value;
+    
+    // Validasi input
+    if (jumlahCicilan <= 0) {
+        showNotification('Jumlah pembayaran harus lebih dari 0!', 'error');
+        return;
+    }
+    
+    if (!penerimaCicilan) {
+        showNotification('Penerima pembayaran harus dipilih!', 'error');
+        return;
+    }
+    
+    const sisaHutang = pesanan.total - pesanan.uang_dibayar;
+    
+    if (jumlahCicilan > sisaHutang) {
+        showNotification(`Jumlah pembayaran tidak boleh melebihi sisa hutang (${formatDollar(sisaHutang)})!`, 'error');
+        return;
+    }
+    
+    // Hitung total baru setelah cicilan
+    const uangDibayarBaru = pesanan.uang_dibayar + jumlahCicilan;
+    const sisaHutangBaru = pesanan.total - uangDibayarBaru;
+    
+    // Tentukan status baru
+    let statusPembayaranBaru = pesanan.status_pembayaran;
+    let statusPesananBaru = pesanan.status;
+    
+    if (uangDibayarBaru >= pesanan.total) {
+        statusPembayaranBaru = 'lunas';
+        statusPesananBaru = 'lunas';
+    } else if (uangDibayarBaru > 0) {
+        statusPembayaranBaru = 'dp';
+        statusPesananBaru = 'hutang';
+    }
+    
+    // Konfirmasi pembayaran
+    showConfirmation(
+        `Konfirmasi Pembayaran Cicilan:
+        
+        Pesanan: ${pesanan.id}
+        Customer: ${pesanan.customer}
+        
+        Jumlah Pembayaran: ${formatDollar(jumlahCicilan)}
+        Total Sudah Dibayar: ${formatDollar(uangDibayarBaru)} (${Math.round((uangDibayarBaru / pesanan.total) * 100)}%)
+        Sisa Hutang: ${formatDollar(sisaHutangBaru)}
+        
+        Penerima: ${penerimaCicilan}
+        ${keteranganCicilan ? `Keterangan: ${keteranganCicilan}` : ''}
+        
+        Apakah Anda yakin ingin menyimpan pembayaran ini?`,
+        function() {
+            // Update data pesanan
+            database.ref('pesanan/' + currentCicilanPesananId).update({
+                uang_dibayar: uangDibayarBaru,
+                status_pembayaran: statusPembayaranBaru,
+                status: statusPesananBaru,
+                penerima_pembayaran: penerimaCicilan
+            })
+            .then(() => {
+                // Buat transaksi keuangan untuk pembayaran cicilan
+                const newTransaksi = {
+                    jenis: 'pemasukan',
+                    jumlah: jumlahCicilan,
+                    keterangan: `Pembayaran cicilan pesanan ${pesanan.id} dari ${pesanan.customer}${keteranganCicilan ? ` - ${keteranganCicilan}` : ''}`,
+                    tanggal: new Date().toISOString().split('T')[0],
+                    created_at: new Date().toISOString(),
+                    related_pesanan: currentCicilanPesananId,
+                    penerima: penerimaCicilan
+                };
+                
+                return database.ref('transaksi').push(newTransaksi);
+            })
+            .then(() => {
+                showNotification(`Pembayaran cicilan sebesar ${formatDollar(jumlahCicilan)} berhasil disimpan!`, 'success');
+                closeModal('input-cicilan-modal');
+                
+                // Refresh modal detail pesanan jika sedang terbuka
+                if (document.getElementById('detail-pesanan-modal').classList.contains('active')) {
+                    setTimeout(() => {
+                        viewPesananDetail(currentCicilanPesananId);
+                    }, 1000);
+                }
+                
+                currentCicilanPesananId = null;
+            })
+            .catch(error => {
+                showNotification('Gagal menyimpan pembayaran cicilan: ' + error.message, 'error');
+            });
+        },
+        'warning'
+    );
+}
+
+// Fungsi untuk menampilkan riwayat cicilan
+function showRiwayatCicilan(pesananId) {
+    const pesanan = pesananData.find(p => p.id === pesananId);
+    if (!pesanan) return;
+    
+    // Cari transaksi terkait pesanan ini
+    const transaksiCicilan = transaksiData.filter(t => 
+        t.related_pesanan === pesananId && 
+        t.jenis === 'pemasukan'
+    );
+    
+    let riwayatHtml = `
+        <div class="detail-pesanan-container">
+            <div class="detail-pesanan-header">
+                <div class="detail-pesanan-title">Riwayat Pembayaran</div>
+                <span class="badge badge-info badge-sm">
+                    ${transaksiCicilan.length} TRANSAKSI
+                </span>
+            </div>
+            
+            <div class="info-section">
+                <div class="info-row">
+                    <span class="info-label">ID Pesanan:</span>
+                    <span class="info-value">${pesanan.id}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Customer:</span>
+                    <span class="info-value">${pesanan.customer}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Total:</span>
+                    <span class="info-value">${formatDollar(pesanan.total)}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Total Dibayar:</span>
+                    <span class="info-value">${formatDollar(pesanan.uang_dibayar)}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Sisa:</span>
+                    <span class="info-value" style="color: ${pesanan.total - pesanan.uang_dibayar > 0 ? 'var(--danger)' : 'var(--success)'}">
+                        ${formatDollar(pesanan.total - pesanan.uang_dibayar)}
+                    </span>
+                </div>
+            </div>
+    `;
+    
+    if (transaksiCicilan.length === 0) {
+        riwayatHtml += `
+            <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                <i class="fas fa-receipt" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                <p>Belum ada riwayat pembayaran cicilan</p>
+            </div>
+        `;
+    } else {
+        riwayatHtml += `
+            <div style="max-height: 300px; overflow-y: auto;">
+                <table class="compact-table">
+                    <thead>
+                        <tr>
+                            <th>Tanggal</th>
+                            <th>Jumlah</th>
+                            <th>Penerima</th>
+                            <th>Keterangan</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+        
+        // Urutkan transaksi dari yang terbaru
+        transaksiCicilan.sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal));
+        
+        transaksiCicilan.forEach(transaksi => {
+            riwayatHtml += `
+                <tr>
+                    <td>${formatDate(transaksi.tanggal)}</td>
+                    <td style="color: var(--success); font-weight: 600;">${formatDollar(transaksi.jumlah)}</td>
+                    <td>
+                        <span class="penerima-badge">${transaksi.penerima || '-'}</span>
+                    </td>
+                    <td style="font-size: 0.8rem; color: var(--text-secondary);">
+                        ${transaksi.keterangan || '-'}
+                    </td>
+                </tr>
+            `;
+        });
+        
+        riwayatHtml += `</tbody></table>`;
+    }
+    
+    riwayatHtml += `
+            </div>
+            
+            <div class="compact-actions">
+                <button class="btn btn-primary btn-compact" onclick="closeModal('detail-pesanan-modal')">
+                    <i class="fas fa-times"></i> Tutup
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('detail-pesanan-content').innerHTML = riwayatHtml;
+    showModal('detail-pesanan-modal');
+}
         // Update recent barang table
         function updateRecentBarang() {
             const recentBarangContainer = document.getElementById('recent-barang');
@@ -5534,6 +5967,16 @@ function deleteLaporanByPeriod() {
                             <i class="fas fa-trash"></i>
                         </button>
                         ` : ''}
+                        ${isAdmin && (pesanan.status_pembayaran !== 'lunas' || pesanan.uang_dibayar < pesanan.total) ? `
+                        <button class="btn btn-cicilan btn-compact" onclick="showInputCicilanModal('${pesanan.id}')">
+                            <i class="fas fa-money-bill-wave"></i> Input Cicilan
+                        </button>   
+                        ` : ''}
+                        ${isAdmin && pesanan.uang_dibayar > 0 ? `
+                        <button class="btn btn-info btn-compact" onclick="showRiwayatCicilan('${pesanan.id}')">
+                            <i class="fas fa-history"></i> Riwayat Pembayaran
+                        </button>
+                        ` : ''}
                     </td>
                 </tr>
             `).join('');
@@ -5613,6 +6056,11 @@ function deleteLaporanByPeriod() {
                             <i class="fas fa-trash"></i>
                         </button>
                         ` : ''}
+                        ${isAdmin && (pesanan.status_pembayaran !== 'lunas' || pesanan.uang_dibayar < pesanan.total) ? `
+                        <button class="btn btn-cicilan btn-compact" onclick="showInputCicilanModal('${pesanan.id}')">
+                            <i class="fas fa-money-bill-wave"></i> Input Cicilan
+                        </button>
+                        ` : ''}
                     </td>
                 </tr>
             `).join('');
@@ -5678,7 +6126,7 @@ function deleteLaporanByPeriod() {
             return 'belum';
         }
 
-        // Get payment status text
+        // Update fungsi getPaymentStatusText untuk menampilkan info cicilan
         function getPaymentStatusText(pesanan) {
             if (pesanan.status_pembayaran === 'lunas' || pesanan.uang_dibayar >= pesanan.total) {
                 return 'LUNAS';
@@ -5690,7 +6138,6 @@ function deleteLaporanByPeriod() {
             }
             return 'BELUM';
         }
-
         // Get detailed payment status text for modal
         function getDetailedPaymentStatus(pesanan) {
             if (pesanan.status_pembayaran === 'lunas' || pesanan.uang_dibayar >= pesanan.total) {
@@ -7395,5 +7842,47 @@ function addThemeToggleButton() {
             </div>
         </div>
     </div>
+    <!-- Modal Input Pembayaran Cicilan -->
+<div class="modal" id="input-cicilan-modal">
+    <div class="modal-content" style="max-width: 500px;">
+        <div class="modal-header">
+            <div class="modal-title">Input Pembayaran Cicilan</div>
+            <button class="close-modal" onclick="closeModal('input-cicilan-modal')">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div id="cicilan-content">
+                <!-- Konten cicilan akan diisi oleh JavaScript -->
+            </div>
+            <div class="form-group">
+                <label for="jumlah-cicilan">Jumlah Pembayaran ($)</label>
+                <input type="number" id="jumlah-cicilan" class="form-control" placeholder="Masukkan jumlah pembayaran" min="1" required>
+            </div>
+            <div class="form-group">
+                <label for="keterangan-cicilan">Keterangan Pembayaran (Opsional)</label>
+                <textarea id="keterangan-cicilan" class="form-control" placeholder="Tambahkan keterangan pembayaran" rows="2"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="penerima-cicilan">Penerima Pembayaran</label>
+                <select id="penerima-cicilan" class="form-control" required>
+                    <option value="">Pilih Penerima</option>
+                    <option value="Zowed">Zowed</option>
+                    <option value="Asap">Asap</option>
+                    <option value="Ruuna">Ruuna</option>
+                    <option value="Vyan">Vyan</option>
+                </select>
+            </div>
+        </div>
+        <div class="modal-footer" style="padding: 1.5rem; border-top: 1px solid var(--dark-surface-light); display: flex; justify-content: flex-end; gap: 1rem;">
+            <button class="btn btn-secondary" onclick="closeModal('input-cicilan-modal')">
+                <i class="fas fa-times"></i> Batal
+            </button>
+            <button class="btn btn-success" onclick="simpanPembayaranCicilan()">
+                <i class="fas fa-save"></i> Simpan Pembayaran
+            </button>
+        </div>
+    </div>
+</div>
 </body>
 </html>
