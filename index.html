@@ -1235,6 +1235,66 @@ body, .card, .sidebar, .modal-content, .form-control, .btn {
             background-clip: text;
         }
 
+        /* Search Filter untuk Pemesanan */
+.search-filter-pesanan {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+    padding: 0 1.5rem;
+}
+
+.search-pesanan-box {
+    display: flex;
+    align-items: center;
+    background: var(--dark-surface);
+    border-radius: var(--border-radius);
+    padding: 0.8rem 1.2rem;
+    flex: 1;
+    max-width: 400px;
+    box-shadow: var(--shadow);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.search-pesanan-box input {
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    width: 100%;
+    margin-left: 0.8rem;
+    outline: none;
+    font-size: 0.95rem;
+}
+
+.search-pesanan-box input::placeholder {
+    color: var(--text-muted);
+}
+
+/* Badge untuk jumlah hasil pencarian */
+.search-result-badge {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: white;
+    padding: 0.3rem 0.8rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-left: 1rem;
+}
+
+/* Empty state untuk pencarian */
+.empty-search-result {
+    text-align: center;
+    padding: 3rem;
+    color: var(--text-muted);
+}
+
+.empty-search-result i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
         .user-info {
             display: flex;
             align-items: center;
@@ -2750,6 +2810,19 @@ body, .card, .sidebar, .modal-content, .form-control, .btn {
                     <div class="tab" data-tab="pesanan-hutang">Hutang</div>
                 </div>
 
+                <!-- Search Box untuk Pemesanan -->
+                <div class="search-filter" style="margin-top: 1rem;">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="search-pesanan" placeholder="Cari pesanan berdasarkan nama customer...">
+                    </div>
+                    <div class="filter-options">
+                        <button class="btn btn-secondary" onclick="clearPesananSearch()">
+                            <i class="fas fa-times"></i> Clear
+                        </button>
+                    </div>
+                </div>
+
                 <!-- Tab Content -->
                 <div class="tab-content active" id="semua-pesanan-tab">
                     <div class="table-container">
@@ -3984,6 +4057,24 @@ body, .card, .sidebar, .modal-content, .form-control, .btn {
                 statusPembayaranElement.addEventListener('change', toggleUangDibayar);
             }
 
+                const searchPesananInput = document.getElementById('search-pesanan');
+            if (searchPesananInput) {
+                // Search saat mengetik (dengan debounce)
+                let searchTimeout;
+                searchPesananInput.addEventListener('input', function() {
+                    clearTimeout(searchTimeout);
+                    searchTimeout = setTimeout(() => {
+                        searchPesanan();
+                    }, 300);
+                });
+                        // Search saat tekan Enter
+                searchPesananInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        searchPesanan();
+                    }
+                });
+            }
+
             // Login form - FIXED (gunakan once atau removeEventListener)
             const loginForm = document.getElementById('login-form');
             if (loginForm) {
@@ -4097,6 +4188,11 @@ body, .card, .sidebar, .modal-content, .form-control, .btn {
                 
                 console.log('🔄 Menampilkan halaman:', pageId);
                 
+                            // Reset pencarian jika berpindah dari halaman pemesanan
+                if (currentPage === 'pemesanan' && pageId !== 'pemesanan') {
+                    clearPesananSearch();
+                }
+
                 // Sembunyikan semua halaman
                 document.querySelectorAll('.page').forEach(page => {
                     if (page && page.classList) {
@@ -8271,6 +8367,320 @@ async function testDiscordNotification() {
             
             showModal('detail-pesanan-modal');
         }
+
+        // ===============================
+// PENCARIAN PESANAN BERDASARKAN NAMA CUSTOMER
+// ===============================
+
+let currentSearchTerm = '';
+
+// Fungsi untuk mencari pesanan berdasarkan nama customer
+function searchPesanan() {
+    const searchTerm = document.getElementById('search-pesanan').value.toLowerCase().trim();
+    currentSearchTerm = searchTerm;
+    
+    if (searchTerm === '') {
+        // Jika pencarian kosong, tampilkan semua data
+        updatePesananUI();
+        hideSearchResults();
+        return;
+    }
+    
+    // Filter pesanan berdasarkan nama customer
+    const filteredPesanan = pesananData.filter(pesanan => 
+        pesanan.customer.toLowerCase().includes(searchTerm)
+    );
+    
+    // Update semua tabel dengan hasil pencarian
+    updateSearchResults(filteredPesanan, searchTerm);
+}
+
+// Fungsi untuk memperbarui UI dengan hasil pencarian
+function updateSearchResults(filteredPesanan, searchTerm) {
+    // Update semua tab dengan hasil yang difilter
+    updateSemuaPesananTable(filteredPesanan);
+    updatePesananAktifTable(filteredPesanan.filter(p => !p.sudah_dikasih));
+    updatePesananLunasTable(filteredPesanan.filter(p => p.sudah_dikasih));
+    updatePesananHutangTable(filteredPesanan.filter(p => p.status === 'hutang' && !p.sudah_dikasih));
+    
+    // Tampilkan badge hasil pencarian
+    showSearchResultsBadge(filteredPesanan.length, searchTerm);
+}
+
+// Fungsi untuk menampilkan badge hasil pencarian
+function showSearchResultsBadge(resultCount, searchTerm) {
+    // Hapus badge sebelumnya jika ada
+    const existingBadge = document.querySelector('.search-result-badge');
+    if (existingBadge) {
+        existingBadge.remove();
+    }
+    
+    if (searchTerm === '') return;
+    
+    const searchBox = document.querySelector('.search-pesanan-box');
+    if (searchBox) {
+        const badge = document.createElement('div');
+        badge.className = 'search-result-badge';
+        badge.innerHTML = `${resultCount} hasil untuk "${searchTerm}"`;
+        badge.style.marginLeft = '1rem';
+        
+        searchBox.parentNode.insertBefore(badge, searchBox.nextSibling);
+    }
+}
+
+// Fungsi untuk menyembunyikan hasil pencarian
+function hideSearchResults() {
+    const existingBadge = document.querySelector('.search-result-badge');
+    if (existingBadge) {
+        existingBadge.remove();
+    }
+}
+
+// Fungsi untuk membersihkan pencarian
+function clearPesananSearch() {
+    document.getElementById('search-pesanan').value = '';
+    currentSearchTerm = '';
+    updatePesananUI();
+    hideSearchResults();
+}
+
+// Update fungsi updateSemuaPesananTable untuk menerima parameter
+function updateSemuaPesananTable(pesananList = null) {
+    const tableBody = document.getElementById('semua-pesanan-table');
+    const dataToShow = pesananList || pesananData;
+    
+    if (dataToShow.length === 0) {
+        if (currentSearchTerm) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="8" class="empty-search-result">
+                        <i class="fas fa-search"></i>
+                        <h4>Tidak ditemukan hasil pencarian</h4>
+                        <p>Tidak ada pesanan untuk customer "${currentSearchTerm}"</p>
+                        <button class="btn btn-primary btn-sm" onclick="clearPesananSearch()">
+                            Tampilkan Semua Pesanan
+                        </button>
+                    </td>
+                </tr>
+            `;
+        } else {
+            tableBody.innerHTML = '<tr><td colspan="8" class="text-center">Tidak ada data pesanan</td></tr>';
+        }
+        return;
+    }
+    
+    tableBody.innerHTML = dataToShow.map(pesanan => `
+        <tr class="${pesanan.sudah_dikasih ? 'pesanan-lunas' : 'pesanan-card'}">
+            <td>${pesanan.id}</td>
+            <td>${formatDate(pesanan.tanggal)}</td>
+            <td>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    ${pesanan.customer}
+                    ${currentSearchTerm ? highlightSearchTerm(pesanan.customer, currentSearchTerm) : ''}
+                </div>
+            </td>
+            <td>${pesanan.items.length} item</td>
+            <td>${formatDollar(pesanan.total)}</td>
+            <td>
+                <span class="status ${getStatusClass(pesanan)}">${getStatusText(pesanan)}</span>
+            </td>
+            <td>
+                <span class="payment-badge ${getPaymentStatusClass(pesanan)}">
+                    ${getPaymentStatusText(pesanan)}
+                </span>
+            </td>
+            <td>
+                <button class="btn btn-info btn-sm" onclick="viewPesananDetail('${pesanan.id}')">
+                    <i class="fas fa-eye"></i>
+                </button>
+                ${!pesanan.sudah_dikasih && isAdmin ? `
+                <button class="btn btn-success btn-sm" onclick="markAsGiven('${pesanan.id}')">
+                    <i class="fas fa-check"></i>
+                </button>
+                ` : ''}
+                ${isAdmin ? `
+                <button class="btn btn-danger btn-sm" onclick="deletePesanan('${pesanan.id}')">
+                    <i class="fas fa-trash"></i>
+                </button>
+                ` : ''}
+            </td>
+        </tr>
+    `).join('');
+}
+
+// Fungsi untuk highlight teks pencarian
+function highlightSearchTerm(text, searchTerm) {
+    if (!searchTerm) return '';
+    
+    const regex = new RegExp(`(${searchTerm})`, 'gi');
+    return text.replace(regex, '<mark style="background: var(--warning); color: var(--text-primary); padding: 0.1rem 0.2rem; border-radius: 0.2rem;">$1</mark>');
+}
+
+// Update fungsi lainnya untuk menerima parameter
+function updatePesananAktifTable(pesananList = null) {
+    const tableBody = document.getElementById('pesanan-aktif-table');
+    const dataToShow = pesananList || pesananData.filter(p => !p.sudah_dikasih);
+    
+    if (dataToShow.length === 0) {
+        if (currentSearchTerm) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="7" class="empty-search-result">
+                        <i class="fas fa-search"></i>
+                        <h4>Tidak ditemukan hasil pencarian</h4>
+                        <p>Tidak ada pesanan aktif untuk customer "${currentSearchTerm}"</p>
+                    </td>
+                </tr>
+            `;
+        } else {
+            tableBody.innerHTML = '<tr><td colspan="7" class="text-center">Tidak ada pesanan aktif</td></tr>';
+        }
+        return;
+    }
+    
+    tableBody.innerHTML = dataToShow.map(pesanan => `
+        <tr class="pesanan-card">
+            <td>${pesanan.id}</td>
+            <td>${formatDate(pesanan.tanggal)}</td>
+            <td>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    ${pesanan.customer}
+                    ${currentSearchTerm ? highlightSearchTerm(pesanan.customer, currentSearchTerm) : ''}
+                </div>
+            </td>
+            <td>${pesanan.items.length} item</td>
+            <td>${formatDollar(pesanan.total)}</td>
+            <td><span class="status ${getStatusClass(pesanan)}">${getStatusText(pesanan)}</span></td>
+            <td>
+                <button class="btn btn-info btn-sm" onclick="viewPesananDetail('${pesanan.id}')">
+                    <i class="fas fa-eye"></i>
+                </button>
+                <button class="btn btn-success btn-sm" onclick="markAsGiven('${pesanan.id}')">
+                    <i class="fas fa-check"></i>
+                </button>
+                ${isAdmin ? `
+                <button class="btn btn-danger btn-sm" onclick="deletePesanan('${pesanan.id}')">
+                    <i class="fas fa-trash"></i>
+                </button>
+                ` : ''}
+            </td>
+        </tr>
+    `).join('');
+}
+
+// Update fungsi lainnya dengan pola yang sama...
+function updatePesananLunasTable(pesananList = null) {
+    const tableBody = document.getElementById('pesanan-lunas-table');
+    const dataToShow = pesananList || pesananData.filter(p => p.sudah_dikasih);
+    
+    if (dataToShow.length === 0) {
+        if (currentSearchTerm) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="7" class="empty-search-result">
+                        <i class="fas fa-search"></i>
+                        <h4>Tidak ditemukan hasil pencarian</h4>
+                        <p>Tidak ada pesanan lunas untuk customer "${currentSearchTerm}"</p>
+                    </td>
+                </tr>
+            `;
+        } else {
+            tableBody.innerHTML = '<tr><td colspan="7" class="text-center">Tidak ada pesanan lunas</td></tr>';
+        }
+        return;
+    }
+    
+    tableBody.innerHTML = dataToShow.map(pesanan => `
+        <tr class="pesanan-lunas">
+            <td>${pesanan.id}</td>
+            <td>${formatDate(pesanan.tanggal)}</td>
+            <td>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    ${pesanan.customer}
+                    ${currentSearchTerm ? highlightSearchTerm(pesanan.customer, currentSearchTerm) : ''}
+                </div>
+            </td>
+            <td>${pesanan.items.length} item</td>
+            <td>${formatDollar(pesanan.total)}</td>
+            <td>
+                ${pesanan.penerima_pembayaran ? `
+                    <span class="penerima-badge ${pesanan.uang_diberikan_ke_bendahara ? 'penerima-dibayar' : ''}">
+                        ${pesanan.penerima_pembayaran}
+                        ${pesanan.uang_diberikan_ke_bendahara ? ' ✓' : ''}
+                    </span>
+                ` : '-'}
+            </td>
+            <td>
+                <button class="btn btn-info btn-sm" onclick="viewPesananDetail('${pesanan.id}')">
+                    <i class="fas fa-eye"></i>
+                </button>
+                ${isAdmin && pesanan.penerima_pembayaran && !pesanan.uang_diberikan_ke_bendahara ? `
+                <button class="btn btn-success btn-sm" onclick="markUangDiberikanKeBendahara('${pesanan.id}')">
+                    <i class="fas fa-money-bill-wave"></i> Bendahara
+                </button>
+                ` : ''}
+                ${isAdmin ? `
+                <button class="btn btn-danger btn-sm" onclick="deletePesanan('${pesanan.id}')">
+                    <i class="fas fa-trash"></i>
+                </button>
+                ` : ''}
+            </td>
+        </tr>
+    `).join('');
+}
+
+function updatePesananHutangTable(pesananList = null) {
+    const tableBody = document.getElementById('pesanan-hutang-table');
+    const dataToShow = pesananList || pesananData.filter(p => p.status === 'hutang' && !p.sudah_dikasih);
+    
+    if (dataToShow.length === 0) {
+        if (currentSearchTerm) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="7" class="empty-search-result">
+                        <i class="fas fa-search"></i>
+                        <h4>Tidak ditemukan hasil pencarian</h4>
+                        <p>Tidak ada pesanan hutang untuk customer "${currentSearchTerm}"</p>
+                    </td>
+                </tr>
+            `;
+        } else {
+            tableBody.innerHTML = '<tr><td colspan="7" class="text-center">Tidak ada pesanan hutang</td></tr>';
+        }
+        return;
+    }
+    
+    tableBody.innerHTML = dataToShow.map(pesanan => {
+        const sisaHutang = pesanan.total - pesanan.uang_dibayar;
+        return `
+        <tr class="pesanan-hutang">
+            <td>${pesanan.id}</td>
+            <td>${formatDate(pesanan.tanggal)}</td>
+            <td>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    ${pesanan.customer}
+                    ${currentSearchTerm ? highlightSearchTerm(pesanan.customer, currentSearchTerm) : ''}
+                </div>
+            </td>
+            <td>${pesanan.items.length} item</td>
+            <td>${formatDollar(pesanan.total)}</td>
+            <td>${formatDollar(sisaHutang)}</td>
+            <td>
+                <button class="btn btn-info btn-sm" onclick="viewPesananDetail('${pesanan.id}')">
+                    <i class="fas fa-eye"></i>
+                </button>
+                <button class="btn btn-success btn-sm" onclick="markAsGiven('${pesanan.id}')">
+                    <i class="fas fa-check"></i>
+                </button>
+                ${isAdmin ? `
+                <button class="btn btn-danger btn-sm" onclick="deletePesanan('${pesanan.id}')">
+                    <i class="fas fa-trash"></i>
+                </button>
+                ` : ''}
+            </td>
+        </tr>
+    `}).join('');
+}
 
         // ===============================
         // INITIALIZATION - DENGAN PROFIT SYSTEM
