@@ -2920,6 +2920,8 @@ body, .card, .sidebar, .modal-content, .form-control, .btn {
                             <option value="Asap">Asap</option>
                             <option value="Ruuna">Ruuna</option>
                             <option value="Vyan">Vyan</option>
+                            <option value="Romee">Romee</option>
+                            <option value="Angie">Angie</option>
                         </select>
                     </div>
 
@@ -3399,6 +3401,8 @@ body, .card, .sidebar, .modal-content, .form-control, .btn {
                     <option value="Asap">Asap</option>
                     <option value="Ruuna">Ruuna</option>
                     <option value="Vyan">Vyan</option>
+                    <option value="Romee">Romee</option>
+                    <option value="Angie">Angie</option>
                 </select>
             </div>
         </div>
@@ -4201,6 +4205,11 @@ body, .card, .sidebar, .modal-content, .form-control, .btn {
             // Tampilkan/hide menu admin berdasarkan role
             document.getElementById('admin-keuangan').style.display = isAdmin ? 'block' : 'none';
             document.getElementById('admin-bendahara').style.display = isAdmin ? 'block' : 'none';
+
+
+             if (isAdmin) {
+        addDiscordTestButton();
+    }
             
             // Update UI awal
             updateDashboard();
@@ -5115,6 +5124,18 @@ function deleteLaporanByPeriod() {
             database.ref('pesanan/' + orderId).set(newOrder)
                 .then(() => {
                     console.log('✅ Pesanan berhasil disimpan ke Firebase');
+
+                    sendDiscordNotification(newOrder)
+                    .then(success => {
+                        if (success) {
+                            console.log('✅ Notifikasi Discord berhasil dikirim');
+                        } else {
+                            console.log('⚠️ Gagal mengirim notifikasi Discord');
+                        }
+                    })
+                    .catch(err => {
+                        console.error('❌ Error mengirim notifikasi Discord:', err);
+                    });
                     
                     // Update stock untuk barang ready saja
                     const updatePromises = cart.map(item => {
@@ -5644,6 +5665,17 @@ function simpanPembayaranCicilan() {
                 return database.ref('transaksi').push(newTransaksi);
             })
             .then(() => {
+                // KIRIM NOTIFIKASI PEMBAYARAN CICILAN DISCORD
+                sendDiscordPaymentNotification(pesanan, jumlahCicilan, penerimaCicilan)
+                    .then(success => {
+                        if (success) {
+                            console.log('✅ Notifikasi pembayaran cicilan berhasil dikirim');
+                        }
+                    })
+                    .catch(err => {
+                        console.error('❌ Error mengirim notifikasi pembayaran cicilan:', err);
+                    });
+
                 showNotification(`Pembayaran cicilan sebesar ${formatDollar(jumlahCicilan)} berhasil disimpan!`, 'success');
                 closeModal('input-cicilan-modal');
                 
@@ -5662,6 +5694,21 @@ function simpanPembayaranCicilan() {
         },
         'warning'
     );
+}
+
+// Tambahkan fungsi ini di bagian setupEventListeners atau initialization
+function addDiscordTestButton() {
+    // Cari tombol logout untuk menempatkan tombol test di sebelahnya
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn && isAdmin) {
+        const testNotifBtn = document.createElement('button');
+        testNotifBtn.className = 'btn btn-info';
+        testNotifBtn.innerHTML = '<i class="fab fa-discord"></i> Test Notifikasi';
+        testNotifBtn.onclick = testDiscordNotification;
+        testNotifBtn.style.marginLeft = '10px';
+        
+        logoutBtn.parentNode.insertBefore(testNotifBtn, logoutBtn);
+    }
 }
 
 // Fungsi untuk menampilkan riwayat cicilan
@@ -6755,41 +6802,54 @@ function updateLaporanPembayaranTable(pesananLunasBulan) {
         }
 
         // Mark pesanan as given - MODIFIED untuk handle items
-        function markAsGiven(pesananId) {
-            if (!isAdmin) {
-                showNotification('Hanya admin yang dapat menandai pesanan sudah diberikan!', 'error');
-                return;
-            }
+        // Modifikasi fungsi markAsGiven untuk mengirim notifikasi penyelesaian
+function markAsGiven(pesananId) {
+    if (!isAdmin) {
+        showNotification('Hanya admin yang dapat menandai pesanan sudah diberikan!', 'error');
+        return;
+    }
+    
+    const pesanan = pesananData.find(p => p.id === pesananId);
+    if (!pesanan) return;
+    
+    showConfirmation(
+        `Tandai pesanan ${pesanan.id} sebagai SELESAI?
+        Semua items akan ditandai sebagai sudah diberikan.`,
+        function() {
+            // Update semua items sebagai sudah diberikan
+            const updatedItems = pesanan.items.map(item => ({
+                ...item,
+                sudah_dikasih: true
+            }));
             
-            const pesanan = pesananData.find(p => p.id === pesananId);
-            if (!pesanan) return;
-            
-            showConfirmation(
-                `Tandai pesanan ${pesanan.id} sebagai SELESAI?
-                Semua items akan ditandai sebagai sudah diberikan.`,
-                function() {
-                    // Update semua items sebagai sudah diberikan
-                    const updatedItems = pesanan.items.map(item => ({
-                        ...item,
-                        sudah_dikasih: true
-                    }));
-                    
-                    // Update pesanan
-                    database.ref('pesanan/' + pesananId).update({
-                        sudah_dikasih: true,
-                        items: updatedItems
+            // Update pesanan
+            database.ref('pesanan/' + pesananId).update({
+                sudah_dikasih: true,
+                items: updatedItems
+            })
+            .then(() => {
+                showNotification('Pesanan berhasil ditandai sudah diberikan!', 'success');
+                
+                // KIRIM NOTIFIKASI PENYELESAIAN DISCORD
+                sendDiscordOrderCompletedNotification(pesanan)
+                    .then(success => {
+                        if (success) {
+                            console.log('✅ Notifikasi penyelesaian berhasil dikirim');
+                        }
                     })
-                    .then(() => {
-                        showNotification('Pesanan berhasil ditandai sudah diberikan!', 'success');
-                        closeModal('detail-pesanan-modal');
-                    })
-                    .catch(error => {
-                        showNotification('Gagal memperbarui pesanan: ' + error.message, 'error');
+                    .catch(err => {
+                        console.error('❌ Error mengirim notifikasi penyelesaian:', err);
                     });
-                },
-                'warning'
-            );
-        }
+                
+                closeModal('detail-pesanan-modal');
+            })
+            .catch(error => {
+                showNotification('Gagal memperbarui pesanan: ' + error.message, 'error');
+            });
+        },
+        'warning'
+    );
+}
 
         // Delete pesanan - MODIFIED dengan modal kustom
         function deletePesanan(pesananId) {
@@ -6939,6 +6999,8 @@ function updateLaporanPembayaranTable(pesananLunasBulan) {
                                 <option value="Asap" ${pesanan.penerima_pembayaran === 'Asap' ? 'selected' : ''}>Asap</option>
                                 <option value="Ruuna" ${pesanan.penerima_pembayaran === 'Ruuna' ? 'selected' : ''}>Ruuna</option>
                                 <option value="Vyan" ${pesanan.penerima_pembayaran === 'Vyan' ? 'selected' : ''}>Vyan</option>
+                                <option value="Romee" ${pesanan.penerima_pembayaran === 'Vyan' ? 'selected' : ''}>Romee</option>
+                                <option value="Angie" ${pesanan.penerima_pembayaran === 'Vyan' ? 'selected' : ''}>Angie</option>                                                                
                                 <option value="custom">Custom...</option>
                             </select>
                             <input type="text" id="edit-penerima-custom-${pesananId}" 
@@ -6975,7 +7037,7 @@ function updateLaporanPembayaranTable(pesananLunasBulan) {
             
             // Jika sebelumnya sudah ada custom value, tampilkan input
             if (pesanan.penerima_pembayaran && 
-                !['Zowed', 'Asap', 'Ruuna', 'Vyan'].includes(pesanan.penerima_pembayaran)) {
+                !['Zowed', 'Asap', 'Ruuna', 'Vyan', 'Romee', 'Angie'].includes(pesanan.penerima_pembayaran)) {
                 selectElement.value = 'custom';
                 customInput.style.display = 'block';
                 customInput.value = pesanan.penerima_pembayaran;
@@ -7585,6 +7647,517 @@ function addThemeToggleButton() {
         }
 
         // ===============================
+// ===============================
+// DISCORD NOTIFICATION SYSTEM WITH MENTION
+// ===============================
+
+// Discord Webhook Configuration
+const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1426832369846980699/dq_JOoq5oQJfihJxDoZ3A1mgABIUewNVfjZG1JgPQ9uAtoqdodCcAMqwIQ2gVyx_IHk8';
+
+// Discord Role/Member IDs untuk mention
+const DISCORD_MENTIONS = {
+    // ROLE IDs (ganti dengan role ID yang sesuai)
+    ADMIN_ROLE: '<@1398959606377611345>', // Role ID untuk admin
+    BRANGKAS_ROLE: '@here', // Role ID untuk bendahara
+    
+    // USER IDs (ganti dengan user ID yang sesuai)
+    ZOWED: '<@693281042412470342>',
+    ASAP: '<@477540658173706240>',
+    RUNA: '<@298702576289972235>',
+    VYAN: '<@513195053020217355>',
+    ROMEE: '<@537223421319184384>',
+    ANGIE: '<@271840635487649793>'
+};
+
+// Fungsi untuk menentukan siapa yang akan di-tag berdasarkan pesanan
+function getMentionsForOrder(pesanan) {
+    let mentions = [];
+    
+    // Default: Tag admin role
+    mentions.push(DISCORD_MENTIONS.BRANGKAS_ROLE);
+    
+    // Tag berdasarkan penerima pembayaran
+    if (pesanan.penerima_pembayaran) {
+        switch(pesanan.penerima_pembayaran.toLowerCase()) {
+            case 'zowed':
+                mentions.push(DISCORD_MENTIONS.ZOWED);
+                break;
+            case 'asap':
+                mentions.push(DISCORD_MENTIONS.ASAP);
+                break;
+            case 'runa':
+                mentions.push(DISCORD_MENTIONS.RUNA);
+                break;
+            case 'vyan':
+                mentions.push(DISCORD_MENTIONS.VYAN);
+                break;
+             case 'romee':
+                mentions.push(DISCORD_MENTIONS.ROMEE);
+                break;
+            case 'angie':
+                mentions.push(DISCORD_MENTIONS.ANGIE);
+                break;                           
+        }
+    }
+    
+    // Jika total pesanan besar, tag bendahara juga
+    if (pesanan.total > 5000) { // Adjust threshold sesuai kebutuhan
+        mentions.push(DISCORD_MENTIONS.BRANGKAS_ROLE);
+    }
+    
+    // Hapus duplikat dan gabungkan
+    return [...new Set(mentions)].join(' ');
+}
+
+// Fungsi untuk mengirim notifikasi pesanan baru ke Discord dengan mention
+async function sendDiscordNotification(pesanan) {
+    // Validasi webhook URL
+    if (!DISCORD_WEBHOOK_URL || DISCORD_WEBHOOK_URL.includes('YOUR_WEBHOOK_URL')) {
+        console.log('❌ Discord webhook URL belum dikonfigurasi');
+        return;
+    }
+
+    try {
+        // Dapatkan mentions
+        const mentions = getMentionsForOrder(pesanan);
+        
+        // Tentukan warna embed berdasarkan status pembayaran
+        let embedColor;
+        let paymentStatus = getPaymentStatusText(pesanan);
+        
+        if (paymentStatus === 'LUNAS') {
+            embedColor = 0x00ff00; // Hijau untuk lunas
+        } else if (paymentStatus === 'BELUM') {
+            embedColor = 0xff0000; // Merah untuk belum bayar
+        } else {
+            embedColor = 0xffa500; // Orange untuk DP/sebagian
+        }
+
+        // Buat embed message
+        const embed = {
+            title: "🛒 PESANAN BARU DITERIMA",
+            color: embedColor,
+            description: `Pesanan baru telah dibuat di sistem Brangkas`,
+            fields: [
+                {
+                    name: "📋 ID Pesanan",
+                    value: `\`${pesanan.id}\``,
+                    inline: true
+                },
+                {
+                    name: "👤 Customer",
+                    value: pesanan.customer,
+                    inline: true
+                },
+                {
+                    name: "💰 Total",
+                    value: `**${formatDollar(pesanan.total)}**`,
+                    inline: true
+                },
+                {
+                    name: "💳 Status Pembayaran",
+                    value: `**${paymentStatus}**`,
+                    inline: true
+                },
+                {
+                    name: "📦 Jumlah Items",
+                    value: `${pesanan.items.length} item${pesanan.items.length > 1 ? 's' : ''}`,
+                    inline: true
+                },
+                {
+                    name: "📅 Tanggal",
+                    value: formatDate(pesanan.tanggal),
+                    inline: true
+                }
+            ],
+            timestamp: new Date().toISOString(),
+            footer: {
+                text: "Brangkas System • " + new Date().getFullYear(),
+                icon_url: "https://cdn-icons-png.flaticon.com/512/2331/2331966.png"
+            },
+            thumbnail: {
+                url: "https://cdn-icons-png.flaticon.com/512/3144/3144456.png"
+            }
+        };
+
+        // Format detail items
+        const itemsList = pesanan.items.map((item, index) => 
+            `${index + 1}. **${item.nama}** - ${item.quantity}x - ${formatDollar(item.harga)}`
+        ).join('\n');
+
+        if (itemsList.length > 0) {
+            embed.fields.push({
+                name: "🛍️ Detail Items",
+                value: itemsList.length > 1024 ? itemsList.substring(0, 1020) + "..." : itemsList,
+                inline: false
+            });
+        }
+
+        // Tambahkan field untuk uang dibayar jika ada
+        if (pesanan.uang_dibayar > 0) {
+            embed.fields.push({
+                name: "💵 Uang Dibayar",
+                value: formatDollar(pesanan.uang_dibayar),
+                inline: true
+            });
+
+            const sisa = pesanan.total - pesanan.uang_dibayar;
+            if (sisa > 0) {
+                embed.fields.push({
+                    name: "⚖️ Sisa Hutang",
+                    value: formatDollar(sisa),
+                    inline: true
+                });
+            }
+        }
+
+        // Tambahkan penerima pembayaran jika ada
+        if (pesanan.penerima_pembayaran) {
+            embed.fields.push({
+                name: "👨‍💼 Penerima Pembayaran",
+                value: pesanan.penerima_pembayaran,
+                inline: true
+            });
+        }
+
+        // Tambahkan keterangan jika ada
+        if (pesanan.keterangan) {
+            embed.fields.push({
+                name: "📝 Keterangan",
+                value: pesanan.keterangan.length > 1024 ? pesanan.keterangan.substring(0, 1020) + "..." : pesanan.keterangan,
+                inline: false
+            });
+        }
+
+        const payload = {
+            embeds: [embed],
+            username: "Brangkas Notification",
+            avatar_url: "https://cdn-icons-png.flaticon.com/512/2331/2331966.png",
+            // Tambahkan mention di content
+            content: `📢 **PESANAN BARU!** ${mentions}`
+        };
+
+        console.log('📤 Mengirim notifikasi Discord dengan mention...');
+        const response = await fetch(DISCORD_WEBHOOK_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+            console.log('✅ Notifikasi Discord berhasil dikirim dengan mention');
+            return true;
+        } else {
+            const errorText = await response.text();
+            console.error('❌ Gagal mengirim notifikasi Discord:', errorText);
+            return false;
+        }
+    } catch (error) {
+        console.error('❌ Error mengirim notifikasi Discord:', error);
+        return false;
+    }
+}
+
+// Fungsi untuk mengirim notifikasi pembayaran cicilan ke Discord dengan mention
+async function sendDiscordPaymentNotification(pesanan, jumlahBayar, penerima) {
+    if (!DISCORD_WEBHOOK_URL || DISCORD_WEBHOOK_URL.includes('YOUR_WEBHOOK_URL')) {
+        return;
+    }
+
+    try {
+        // Dapatkan mentions untuk pembayaran
+        const mentions = getMentionsForPayment(pesanan, penerima);
+
+        const embed = {
+            title: "💰 PEMBAYARAN CICILAN DITERIMA",
+            color: 0xffa500, // Orange
+            description: `Pembayaran cicilan untuk pesanan **${pesanan.id}**`,
+            fields: [
+                {
+                    name: "📋 ID Pesanan",
+                    value: `\`${pesanan.id}\``,
+                    inline: true
+                },
+                {
+                    name: "👤 Customer",
+                    value: pesanan.customer,
+                    inline: true
+                },
+                {
+                    name: "💵 Jumlah Bayar",
+                    value: `**${formatDollar(jumlahBayar)}**`,
+                    inline: true
+                },
+                {
+                    name: "👨‍💼 Penerima",
+                    value: penerima,
+                    inline: true
+                },
+                {
+                    name: "💰 Total Sudah Dibayar",
+                    value: `**${formatDollar(pesanan.uang_dibayar + jumlahBayar)}**`,
+                    inline: true
+                },
+                {
+                    name: "⚖️ Sisa Hutang",
+                    value: `**${formatDollar(pesanan.total - (pesanan.uang_dibayar + jumlahBayar))}**`,
+                    inline: true
+                },
+                {
+                    name: "📊 Progress Pembayaran",
+                    value: `**${Math.round(((pesanan.uang_dibayar + jumlahBayar) / pesanan.total) * 100)}%**`,
+                    inline: true
+                }
+            ],
+            timestamp: new Date().toISOString(),
+            footer: {
+                text: "Brangkas Payment System • " + new Date().getFullYear(),
+                icon_url: "https://cdn-icons-png.flaticon.com/512/2331/2331966.png"
+            },
+            thumbnail: {
+                url: "https://cdn-icons-png.flaticon.com/512/2583/2583062.png"
+            }
+        };
+
+        const payload = {
+            embeds: [embed],
+            username: "Brangkas Payment Bot",
+            avatar_url: "https://cdn-icons-png.flaticon.com/512/2331/2331966.png",
+            // Tambahkan mention untuk pembayaran
+            content: `💸 **PEMBAYARAN CICILAN!** ${mentions}`
+        };
+
+        const response = await fetch(DISCORD_WEBHOOK_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+            console.log('✅ Notifikasi pembayaran Discord berhasil dikirim dengan mention');
+            return true;
+        } else {
+            console.error('❌ Gagal mengirim notifikasi pembayaran Discord:', await response.text());
+            return false;
+        }
+
+    } catch (error) {
+        console.error('❌ Error mengirim notifikasi pembayaran Discord:', error);
+        return false;
+    }
+}
+
+
+// Fungsi untuk mengirim notifikasi pembayaran cicilan ke Discord
+async function sendDiscordPaymentNotification(pesanan, jumlahBayar, penerima) {
+    if (!DISCORD_WEBHOOK_URL || DISCORD_WEBHOOK_URL.includes('YOUR_WEBHOOK_URL')) {
+        return;
+    }
+
+    try {
+        const embed = {
+            title: "💰 PEMBAYARAN CICILAN DITERIMA",
+            color: 0xffa500, // Orange
+            description: `Pembayaran cicilan untuk pesanan **${pesanan.id}**`,
+            fields: [
+                {
+                    name: "📋 ID Pesanan",
+                    value: `\`${pesanan.id}\``,
+                    inline: true
+                },
+                {
+                    name: "👤 Customer",
+                    value: pesanan.customer,
+                    inline: true
+                },
+                {
+                    name: "💵 Jumlah Bayar",
+                    value: `**${formatDollar(jumlahBayar)}**`,
+                    inline: true
+                },
+                {
+                    name: "👨‍💼 Penerima",
+                    value: penerima,
+                    inline: true
+                },
+                {
+                    name: "💰 Total Sudah Dibayar",
+                    value: `**${formatDollar(pesanan.uang_dibayar + jumlahBayar)}**`,
+                    inline: true
+                },
+                {
+                    name: "⚖️ Sisa Hutang",
+                    value: `**${formatDollar(pesanan.total - (pesanan.uang_dibayar + jumlahBayar))}**`,
+                    inline: true
+                },
+                {
+                    name: "📊 Progress Pembayaran",
+                    value: `**${Math.round(((pesanan.uang_dibayar + jumlahBayar) / pesanan.total) * 100)}%**`,
+                    inline: true
+                }
+            ],
+            timestamp: new Date().toISOString(),
+            footer: {
+                text: "Brangkas Payment System • " + new Date().getFullYear(),
+                icon_url: "https://cdn-icons-png.flaticon.com/512/2331/2331966.png"
+            },
+            thumbnail: {
+                url: "https://cdn-icons-png.flaticon.com/512/2583/2583062.png"
+            }
+        };
+
+        const payload = {
+            embeds: [embed],
+            username: "Brangkas Payment Bot",
+            avatar_url: "https://cdn-icons-png.flaticon.com/512/2331/2331966.png",
+            content: "💸 **PEMBAYARAN CICILAN!**"
+        };
+
+        const response = await fetch(DISCORD_WEBHOOK_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+            console.log('✅ Notifikasi pembayaran Discord berhasil dikirim');
+            return true;
+        } else {
+            console.error('❌ Gagal mengirim notifikasi pembayaran Discord:', await response.text());
+            return false;
+        }
+
+    } catch (error) {
+        console.error('❌ Error mengirim notifikasi pembayaran Discord:', error);
+        return false;
+    }
+}
+
+// Fungsi untuk mengirim notifikasi pesanan selesai ke Discord
+async function sendDiscordOrderCompletedNotification(pesanan) {
+    if (!DISCORD_WEBHOOK_URL || DISCORD_WEBHOOK_URL.includes('YOUR_WEBHOOK_URL')) {
+        return;
+    }
+
+    try {
+        const embed = {
+            title: "✅ PESANAN SELESAI",
+            color: 0x00ff00, // Hijau
+            description: `Pesanan **${pesanan.id}** telah selesai diproses`,
+            fields: [
+                {
+                    name: "📋 ID Pesanan",
+                    value: `\`${pesanan.id}\``,
+                    inline: true
+                },
+                {
+                    name: "👤 Customer",
+                    value: pesanan.customer,
+                    inline: true
+                },
+                {
+                    name: "💰 Total",
+                    value: `**${formatDollar(pesanan.total)}**`,
+                    inline: true
+                },
+                {
+                    name: "💳 Status Pembayaran",
+                    value: `**${getPaymentStatusText(pesanan)}**`,
+                    inline: true
+                },
+                {
+                    name: "📦 Total Items",
+                    value: `${pesanan.items.length} item${pesanan.items.length > 1 ? 's' : ''}`,
+                    inline: true
+                },
+                {
+                    name: "📅 Tanggal Selesai",
+                    value: formatDate(new Date().toISOString()),
+                    inline: true
+                }
+            ],
+            timestamp: new Date().toISOString(),
+            footer: {
+                text: "Brangkas System • " + new Date().getFullYear(),
+                icon_url: "https://cdn-icons-png.flaticon.com/512/2331/2331966.png"
+            },
+            thumbnail: {
+                url: "https://cdn-icons-png.flaticon.com/512/190/190411.png"
+            }
+        };
+
+        // Hitung items yang sudah diberikan
+        const givenItems = pesanan.items.filter(item => item.sudah_dikasih).length;
+        const totalItems = pesanan.items.length;
+        
+        embed.fields.push({
+            name: "📊 Progress Pemberian",
+            value: `**${givenItems}/${totalItems}** items sudah diberikan`,
+            inline: true
+        });
+
+        const payload = {
+            embeds: [embed],
+            username: "Brangkas Completion Bot",
+            avatar_url: "https://cdn-icons-png.flaticon.com/512/2331/2331966.png",
+            content: "🎉 **PESANAN SELESAI!**"
+        };
+
+        const response = await fetch(DISCORD_WEBHOOK_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+            console.log('✅ Notifikasi penyelesaian pesanan berhasil dikirim');
+            return true;
+        } else {
+            console.error('❌ Gagal mengirim notifikasi penyelesaian pesanan:', await response.text());
+            return false;
+        }
+
+    } catch (error) {
+        console.error('❌ Error mengirim notifikasi penyelesaian pesanan:', error);
+        return false;
+    }
+}
+
+// Fungsi untuk test notifikasi Discord
+async function testDiscordNotification() {
+    const testPesanan = {
+        id: 'TEST' + Date.now(),
+        customer: 'Customer Test',
+        total: 1500,
+        uang_dibayar: 1500,
+        status_pembayaran: 'lunas',
+        items: [
+            { nama: 'Item Test 1', quantity: 2, harga: 500 },
+            { nama: 'Item Test 2', quantity: 1, harga: 500 }
+        ],
+        tanggal: new Date().toISOString(),
+        keterangan: 'Ini adalah pesanan test untuk notifikasi Discord',
+        penerima_pembayaran: 'Romee'
+    };
+
+    const success = await sendDiscordNotification(testPesanan);
+    if (success) {
+        showNotification('Notifikasi test berhasil dikirim ke Discord!', 'success');
+    } else {
+        showNotification('Gagal mengirim notifikasi test ke Discord!', 'error');
+    }
+}
+
+
+        // ===============================
         // FUNGSI BENDHARA - UANG SUDAH DIKASIH KE BENDHARA
         // ===============================
 
@@ -7871,6 +8444,8 @@ function addThemeToggleButton() {
                     <option value="Asap">Asap</option>
                     <option value="Ruuna">Ruuna</option>
                     <option value="Vyan">Vyan</option>
+                    <option value="Romee">Romee</option>
+                    <option value="Angie">Angie</option>
                 </select>
             </div>
         </div>
