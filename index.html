@@ -331,16 +331,16 @@ body, .card, .sidebar, .modal-content, .form-control, .btn {
 
 .cicilan-progress {
     background: var(--dark-surface-lighter);
-    height: 6px;
-    border-radius: 3px;
+    height: 8px;
+    border-radius: 4px;
     overflow: hidden;
-    margin-top: 0.5rem;
+    margin: 1rem 0;
 }
 
 .cicilan-progress-fill {
     height: 100%;
     background: linear-gradient(135deg, var(--info) 0%, var(--info-dark) 100%);
-    border-radius: 3px;
+    border-radius: 4px;
     transition: width 0.3s ease;
 }
 
@@ -1114,6 +1114,7 @@ body, .card, .sidebar, .modal-content, .form-control, .btn {
     cursor: pointer;
     font-size: 0.8rem;
     transition: var(--transition-fast);
+    white-space: nowrap;
 }
 
 .btn-cicilan:hover {
@@ -3563,7 +3564,7 @@ body, .card, .sidebar, .modal-content, .form-control, .btn {
             'meth': 'images/meth.png',
             'red': 'images/red.png',
             'tablet': 'images/tablet.png',
-            'meja': 'images/meja.png',
+            'table': 'images/meja.png',
             'thermite': 'images/thermite.png',
             'grinder': 'images/grinder.png',
             'plasma': 'images/plasma.png',
@@ -5301,8 +5302,8 @@ function deleteLaporanByPeriod() {
         const hargaModal = {
             'seeds': 550,    // Harga modal seeds canabis
             'meth': 600,     // Harga modal meth bag
-            'seeds canabis': 550,
-            'meth bag': 600
+            'seeds canabis': 600,
+            'meth bag': 650
         };
 
         // Fungsi untuk mendapatkan harga modal berdasarkan nama barang
@@ -5667,9 +5668,20 @@ function showInputCicilanModal(pesananId) {
     document.getElementById('penerima-cicilan').value = '';
     
     // Set nilai maksimum untuk input cicilan
-    document.getElementById('jumlah-cicilan').max = sisaHutang;
+    const jumlahCicilanInput = document.getElementById('jumlah-cicilan');
+    if (jumlahCicilanInput) {
+        jumlahCicilanInput.max = sisaHutang;
+        jumlahCicilanInput.placeholder = `Maksimal: ${formatDollar(sisaHutang)}`;
+    }
     
-    showModal('input-cicilan-modal');
+    // Tampilkan modal
+    const modal = document.getElementById('input-cicilan-modal');
+    if (modal) {
+        modal.classList.add('active');
+        console.log('✅ Modal cicilan berhasil ditampilkan');
+    } else {
+        console.error('❌ Modal cicilan tidak ditemukan');
+    }
 }
 
 // Fungsi untuk menyimpan pembayaran cicilan
@@ -7748,7 +7760,7 @@ function addThemeToggleButton() {
 // ===============================
 
 // Discord Webhook Configuration
-const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1426832369846980699/dq_JOoq5oQJfihJxDoZ3A1mgABIUewNVfjZG1JgPQ9uAtoqdodCcAMqwIQ2gVyx_IHk8';
+const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1426817212890615871/hvaRn-4ModF-G7BzhdTDS_fgx6hoPoqOaEIApf6gNrkphSPIYqFZC2UdJvX1ISotcm3L';
 
 // Discord Role/Member IDs untuk mention
 const DISCORD_MENTIONS = {
@@ -7773,7 +7785,7 @@ function getMentionsForOrder(pesanan) {
     mentions.push(DISCORD_MENTIONS.BRANGKAS_ROLE);
     
     // Tag berdasarkan penerima pembayaran
-    if (pesanan.penerima_pembayaran) {
+     if (pesanan.status_pembayaran !== 'belum' && pesanan.penerima_pembayaran) {
         switch(pesanan.penerima_pembayaran.toLowerCase()) {
             case 'zowed':
                 mentions.push(DISCORD_MENTIONS.ZOWED);
@@ -7787,7 +7799,7 @@ function getMentionsForOrder(pesanan) {
             case 'vyan':
                 mentions.push(DISCORD_MENTIONS.VYAN);
                 break;
-             case 'romee':
+            case 'romee':
                 mentions.push(DISCORD_MENTIONS.ROMEE);
                 break;
             case 'angie':
@@ -8469,43 +8481,50 @@ function updateSemuaPesananTable(pesananList = null) {
         return;
     }
     
-    tableBody.innerHTML = dataToShow.map(pesanan => `
-        <tr class="${pesanan.sudah_dikasih ? 'pesanan-lunas' : 'pesanan-card'}">
-            <td>${pesanan.id}</td>
-            <td>${formatDate(pesanan.tanggal)}</td>
-            <td>
-                <div style="display: flex; align-items: center; gap: 0.5rem;">
-                    ${pesanan.customer}
-                    ${currentSearchTerm ? highlightSearchTerm(pesanan.customer, currentSearchTerm) : ''}
-                </div>
-            </td>
-            <td>${pesanan.items.length} item</td>
-            <td>${formatDollar(pesanan.total)}</td>
-            <td>
-                <span class="status ${getStatusClass(pesanan)}">${getStatusText(pesanan)}</span>
-            </td>
-            <td>
-                <span class="payment-badge ${getPaymentStatusClass(pesanan)}">
-                    ${getPaymentStatusText(pesanan)}
-                </span>
-            </td>
-            <td>
-                <button class="btn btn-info btn-sm" onclick="viewPesananDetail('${pesanan.id}')">
-                    <i class="fas fa-eye"></i>
-                </button>
-                ${!pesanan.sudah_dikasih && isAdmin ? `
-                <button class="btn btn-success btn-sm" onclick="markAsGiven('${pesanan.id}')">
-                    <i class="fas fa-check"></i>
-                </button>
-                ` : ''}
-                ${isAdmin ? `
-                <button class="btn btn-danger btn-sm" onclick="deletePesanan('${pesanan.id}')">
-                    <i class="fas fa-trash"></i>
-                </button>
-                ` : ''}
-            </td>
-        </tr>
-    `).join('');
+    tableBody.innerHTML = dataToShow.map(pesanan => {
+        const sisaHutang = pesanan.total - pesanan.uang_dibayar;
+        const showCicilanButton = isAdmin && sisaHutang > 0;
+        
+        return `
+            <tr class="${pesanan.sudah_dikasih ? 'pesanan-lunas' : 'pesanan-card'}">
+                <td>${pesanan.id}</td>
+                <td>${formatDate(pesanan.tanggal)}</td>
+                <td>${pesanan.customer}</td>
+                <td>${pesanan.items.length} item</td>
+                <td>${formatDollar(pesanan.total)}</td>
+                <td>
+                    <span class="status ${getStatusClass(pesanan)}">${getStatusText(pesanan)}</span>
+                </td>
+                <td>
+                    <span class="payment-badge ${getPaymentStatusClass(pesanan)}">
+                        ${getPaymentStatusText(pesanan)}
+                    </span>
+                </td>
+                <td>
+                    <div style="display: flex; gap: 0.3rem; flex-wrap: wrap;">
+                        <button class="btn btn-info btn-sm" onclick="viewPesananDetail('${pesanan.id}')" title="Lihat Detail">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        ${!pesanan.sudah_dikasih && isAdmin ? `
+                        <button class="btn btn-success btn-sm" onclick="markAsGiven('${pesanan.id}')" title="Tandai Selesai">
+                            <i class="fas fa-check"></i>
+                        </button>
+                        ` : ''}
+                        ${showCicilanButton ? `
+                        <button class="btn btn-warning btn-sm" onclick="showInputCicilanModal('${pesanan.id}')" title="Input Cicilan">
+                            <i class="fas fa-money-bill-wave"></i> Cicilan
+                        </button>
+                        ` : ''}
+                        ${isAdmin ? `
+                        <button class="btn btn-danger btn-sm" onclick="deletePesanan('${pesanan.id}')" title="Hapus Pesanan">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                        ` : ''}
+                    </div>
+                </td>
+            </tr>
+        `;
+    }).join('');
 }
 
 // Fungsi untuk highlight teks pencarian
@@ -8567,6 +8586,40 @@ function updatePesananAktifTable(pesananList = null) {
         </tr>
     `).join('');
 }
+
+// Fungsi debugging untuk memeriksa tombol cicilan
+function checkCicilanButtons() {
+    console.log('🔍 Memeriksa tombol cicilan...');
+    
+    // Cek apakah user admin
+    console.log('Is Admin:', isAdmin);
+    
+    // Cek data pesanan
+    console.log('Total Pesanan:', pesananData.length);
+    
+    // Cek pesanan yang bisa dicicil
+    const pesananBisaCicil = pesananData.filter(p => {
+        const sisaHutang = p.total - p.uang_dibayar;
+        return sisaHutang > 0;
+    });
+    
+    console.log('Pesanan yang bisa dicicil:', pesananBisaCicil.length);
+    pesananBisaCicil.forEach(p => {
+        const sisaHutang = p.total - p.uang_dibayar;
+        console.log(`- ${p.id}: ${p.customer}, Sisa: ${formatDollar(sisaHutang)}`);
+    });
+    
+    // Cek modal cicilan
+    const modalCicilan = document.getElementById('input-cicilan-modal');
+    console.log('Modal cicilan ditemukan:', !!modalCicilan);
+    
+    // Cek tombol di tabel
+    const buttons = document.querySelectorAll('[onclick*="showInputCicilanModal"]');
+    console.log('Tombol cicilan ditemukan:', buttons.length);
+}
+
+// Panggil fungsi debugging (bisa di console browser)
+// checkCicilanButtons();
 
 // Update fungsi lainnya dengan pola yang sama...
 function updatePesananLunasTable(pesananList = null) {
