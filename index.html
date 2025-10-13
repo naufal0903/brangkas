@@ -1272,6 +1272,45 @@ body, .card, .sidebar, .modal-content, .form-control, .btn {
     color: var(--text-muted);
 }
 
+/* Password Modal Styles */
+.password-hint {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.password-strength {
+    height: 4px;
+    border-radius: 2px;
+    margin-top: 0.5rem;
+    background: var(--dark-surface-lighter);
+    overflow: hidden;
+}
+
+.password-strength-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.3s ease, background-color 0.3s ease;
+}
+
+.password-strength.weak .password-strength-fill {
+    background: var(--danger);
+    width: 33%;
+}
+
+.password-strength.medium .password-strength-fill {
+    background: var(--warning);
+    width: 66%;
+}
+
+.password-strength.strong .password-strength-fill {
+    background: var(--success);
+    width: 100%;
+}
+
 /* Badge untuk jumlah hasil pencarian */
 .search-result-badge {
     background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
@@ -1300,6 +1339,16 @@ body, .card, .sidebar, .modal-content, .form-control, .btn {
             display: flex;
             align-items: center;
             gap: 1rem;
+        }
+
+        /* Hide financial cards for buyer */
+        .buyer-hidden {
+            display: none !important;
+        }
+
+        /* Adjust grid layout when cards are hidden */
+        [data-user-role="buyer"] .cards {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
         }
 
         .user-avatar {
@@ -2586,9 +2635,12 @@ body, .card, .sidebar, .modal-content, .form-control, .btn {
                 </div>
             </form>
             <div class="public-access">
-                <button class="public-access-btn" id="public-access-btn">
+                <button type="button" class="public-access-btn" id="public-access-btn">
                     <i class="fas fa-eye"></i> Akses sebagai Pembeli
                 </button>
+                <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem;">
+                    <i class="fas fa-shield-alt"></i> Diperlukan password
+                </div>
             </div>
             <div class="login-footer">
                 &copy; DSG JAYA JAYA JAYA
@@ -3561,7 +3613,7 @@ body, .card, .sidebar, .modal-content, .form-control, .btn {
             'drum': 'images/drum.png',
             'extended': 'images/extended.png',
             'scope': 'images/scope.png',
-            'meth': 'images/meth.png',
+            'bag': 'images/meth.png',
             'red': 'images/red.png',
             'tablet': 'images/tablet.png',
             'table': 'images/meja.png',
@@ -3575,6 +3627,8 @@ body, .card, .sidebar, .modal-content, .form-control, .btn {
             'small': 'images/small.png',
             'explosive': 'images/explosive.png',
             'c4': 'images/c4.png',
+            'meth': 'images/material.png',
+            'oven': 'images/oven.png',
             // Fallback dan default
             'default': 'images/default.jpg'
         };
@@ -4020,20 +4074,28 @@ body, .card, .sidebar, .modal-content, .form-control, .btn {
             }
         };
 
-        // Initialize app for public access
-        function initializeApp() {
-            // Cek status login dari localStorage
-            const savedUser = localStorage.getItem('brangkas_user');
-            const savedAdmin = localStorage.getItem('brangkas_admin');
-            
-            if (savedUser) {
-                currentUser = JSON.parse(savedUser);
-                isAdmin = savedAdmin === 'true';
-                showApp();
-            } else {
-                showLogin();
-            }
+        // Update fungsi initializeApp untuk handle pembeli
+function initializeApp() {
+    // Cek status login dari localStorage
+    const savedUser = localStorage.getItem('brangkas_user');
+    const savedAdmin = localStorage.getItem('brangkas_admin');
+    const savedBuyer = localStorage.getItem('brangkas_buyer');
+    
+    if (savedUser) {
+        currentUser = JSON.parse(savedUser);
+        isAdmin = savedAdmin === 'true';
+        
+        // Jika adalah pembeli, set flag
+        if (savedBuyer === 'true') {
+            currentUser.role = 'buyer';
         }
+        
+        showApp();
+    } else {
+        showLogin();
+    }
+}
+
 
         // ===============================
         // FIXED EVENT LISTENER MANAGEMENT
@@ -4049,6 +4111,19 @@ body, .card, .sidebar, .modal-content, .form-control, .btn {
             }
             
             console.log('🔄 Setting up event listeners...');
+
+            const pembeliPasswordForm = document.getElementById('pembeli-password-form');
+            if (pembeliPasswordForm) {
+                pembeliPasswordForm.removeEventListener('submit', handlePembeliLogin);
+                pembeliPasswordForm.addEventListener('submit', handlePembeliLogin);
+            }
+
+            // Public access button
+            const publicAccessBtn = document.getElementById('public-access-btn');
+            if (publicAccessBtn) {
+                publicAccessBtn.removeEventListener('click', handlePublicAccess);
+                publicAccessBtn.addEventListener('click', handlePublicAccess);
+            }
             
             // Setup payment listeners
             setupPaymentListeners();
@@ -4076,17 +4151,13 @@ body, .card, .sidebar, .modal-content, .form-control, .btn {
                 });
             }
 
+            
+
             // Login form - FIXED (gunakan once atau removeEventListener)
             const loginForm = document.getElementById('login-form');
             if (loginForm) {
                 loginForm.removeEventListener('submit', handleLogin);
                 loginForm.addEventListener('submit', handleLogin);
-            }
-            
-            const publicAccessBtn = document.getElementById('public-access-btn');
-            if (publicAccessBtn) {
-                publicAccessBtn.removeEventListener('click', handlePublicAccess);
-                publicAccessBtn.addEventListener('click', handlePublicAccess);
             }
             
             // Navigation - FIXED (gunakan event delegation)
@@ -4261,6 +4332,12 @@ body, .card, .sidebar, .modal-content, .form-control, .btn {
             }
         }
 
+        // Fungsi untuk kembali ke login admin dari modal pembeli
+        function backToAdminLogin() {
+            closeModal('pembeli-password-modal');
+            showLogin(); // Ini akan menampilkan layar login admin
+        }
+
         // ===============================
         // FIXED CHECKOUT BUTTON HANDLER
         // ===============================
@@ -4290,35 +4367,65 @@ body, .card, .sidebar, .modal-content, .form-control, .btn {
         }
 
         // Fungsi-fungsi UI
-        function showLogin() {
-            document.getElementById('login-screen').style.display = 'flex';
-            document.getElementById('app').style.display = 'none';
-        }
+function showLogin() {
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('app').style.display = 'none';
+    
+    // Reset semua modal
+    closeModal('pembeli-password-modal');
+    
+    // Reset form
+    document.getElementById('login-form').reset();
+    document.getElementById('pembeli-password-form').reset();
+}
 
         function showApp() {
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('app').style.display = 'flex';
+
+            // Cek apakah user adalah pembeli
+            const isBuyer = localStorage.getItem('brangkas_buyer') === 'true';
             
-            // Tampilkan/hide menu admin berdasarkan role
-            document.getElementById('admin-keuangan').style.display = isAdmin ? 'block' : 'none';
-            document.getElementById('admin-bendahara').style.display = isAdmin ? 'block' : 'none';
+        if (isBuyer) {
+                // Sembunyikan menu admin untuk pembeli
+                document.getElementById('admin-keuangan').style.display = 'none';
+                document.getElementById('admin-bendahara').style.display = 'none';
+                
+                // Update UI untuk pembeli
+                document.getElementById('user-avatar').textContent = 'P';
+                document.getElementById('user-avatar').style.background = 'linear-gradient(135deg, var(--info) 0%, var(--info-dark) 100%)';
+                
+                // Update judul dashboard untuk pembeli
+                const dashboardTitle = document.querySelector('#dashboard-page h1');
+                if (dashboardTitle) {
+                    dashboardTitle.innerHTML = 'Dashboard <small style="font-size: 0.6em; color: var(--info);">(Akses Pembeli)</small>';
+                }
+                
+                // Tampilkan info akses pembeli
+                showBuyerWelcomeMessage();
+            } else {
+                // Tampilkan/hide menu admin berdasarkan role
+                document.getElementById('admin-keuangan').style.display = isAdmin ? 'block' : 'none';
+                document.getElementById('admin-bendahara').style.display = isAdmin ? 'block' : 'none';
+            }
 
 
              if (isAdmin) {
         addDiscordTestButton();
     }
             
-            // Update UI awal
-            updateDashboard();
-            updateBarangUI();
-            updatePesananUI();
-            if (isAdmin) {
-                updateTransaksiUI();
-                updateBendaharaDashboard(); // Tambahkan ini
-            }
-            
-            showNotification('Selamat datang di Brangkas!', 'success');
-        }
+    // Update UI awal
+    updateDashboard();
+    updateBarangUI();
+    updatePesananUI();
+    if (isAdmin) {
+        updateTransaksiUI();
+        updateBendaharaDashboard();
+    }
+    
+    const welcomeMessage = isBuyer ? 'Selamat datang di Brangkas (Akses Pembeli)!' : 'Selamat datang di Brangkas!';
+    showNotification(welcomeMessage, 'success');
+}
 
         function showModal(modalId) {
             document.getElementById(modalId).classList.add('active');
@@ -4395,15 +4502,20 @@ body, .card, .sidebar, .modal-content, .form-control, .btn {
             localStorage.setItem('brangkas_admin', 'false');
             
             showApp();
+            showPembeliPasswordModal();
         }
 
+        // Update fungsi handleLogout untuk handle pembeli
         function handleLogout() {
+            const isBuyer = localStorage.getItem('brangkas_buyer') === 'true';
+            
             currentUser = null;
             isAdmin = false;
             
             // Hapus dari localStorage
             localStorage.removeItem('brangkas_user');
             localStorage.removeItem('brangkas_admin');
+            localStorage.removeItem('brangkas_buyer');
             
             // Reset cart
             cart = [];
@@ -4411,8 +4523,28 @@ body, .card, .sidebar, .modal-content, .form-control, .btn {
             updateCartUI();
             
             showLogin();
-            showNotification('Anda telah logout', 'info');
+            
+            const logoutMessage = isBuyer ? 'Anda telah logout dari akses pembeli' : 'Anda telah logout';
+            showNotification(logoutMessage, 'info');
         }
+
+        // Fungsi untuk menampilkan pesan welcome pembeli
+function showBuyerWelcomeMessage() {
+    const dashboardPage = document.getElementById('dashboard-page');
+    const header = dashboardPage.querySelector('.header');
+    
+    // Cek apakah sudah ada welcome message
+    if (!document.getElementById('buyer-welcome-message')) {
+        const welcomeDiv = document.createElement('div');
+        welcomeDiv.id = 'buyer-welcome-message';
+        welcomeDiv.className = 'buyer-features';
+        welcomeDiv.innerHTML = `
+            <h4><i class="fas fa-user-check"></i> Akses Pembeli</h4>
+        `;
+        
+        header.parentNode.insertBefore(welcomeDiv, header.nextSibling);
+    }
+}
 
         // ===============================
 // FUNGSI HAPUS LAPORAN PEMBAYARAN - ADMIN ONLY
@@ -5554,35 +5686,56 @@ function deleteLaporanByPeriod() {
         // ===============================
 
         // Update dashboard
+        // Update dashboard
         function updateDashboard() {
+            const isBuyer = localStorage.getItem('brangkas_buyer') === 'true';
+            
             // Update total barang
             document.getElementById('total-barang').textContent = barangData.length;
 
-            // Update total nilai barang
-            const totalNilai = barangData.reduce((sum, barang) => sum + (barang.harga * barang.stok), 0);
-            document.getElementById('total-barang').textContent = barangData.length;;
-            
             // Update total pesanan aktif
             const totalPesananAktif = pesananData.filter(p => !p.sudah_dikasih).length;
             document.getElementById('total-pesanan').textContent = totalPesananAktif;
             
-            // Update total keuangan
+            // Update total keuangan - SEMBUNYIKAN untuk pembeli
             const saldoKas = calculateSaldoKas();
-            document.getElementById('total-keuangan').textContent = formatDollar(saldoKas);
+            const totalKeuanganElement = document.getElementById('total-keuangan');
+            if (isBuyer) {
+                totalKeuanganElement.textContent = '***';
+                totalKeuanganElement.parentElement.style.display = 'none'; // Sembunyikan card
+            } else {
+                totalKeuanganElement.textContent = formatDollar(saldoKas);
+                totalKeuanganElement.parentElement.style.display = 'block';
+            }
             
-            // Update total hutang (BARU)
+            // Update total hutang - SEMBUNYIKAN untuk pembeli
             const totalHutang = calculateTotalHutang();
-            document.getElementById('total-hutang').textContent = formatDollar(totalHutang);
+            const totalHutangElement = document.getElementById('total-hutang');
+            if (isBuyer) {
+                totalHutangElement.textContent = '***';
+                totalHutangElement.parentElement.style.display = 'none'; // Sembunyikan card
+            } else {
+                totalHutangElement.textContent = formatDollar(totalHutang);
+                totalHutangElement.parentElement.style.display = 'block';
+            }
             
-            // Update profit dashboard
-            updateProfitDashboard();
+            // Update profit dashboard - hanya untuk admin
+            if (!isBuyer) {
+                updateProfitDashboard();
+            } else {
+                // Sembunyikan card profit jika ada
+                const profitCard = document.getElementById('profit-card');
+                if (profitCard) {
+                    profitCard.style.display = 'none';
+                }
+            }
             
             // Update recent barang
             updateRecentBarang();
             
             // Update recent pesanan
             updateRecentPesanan();
-        }
+}
 
         // Fungsi untuk menghitung total hutang
         function calculateTotalHutang() {
@@ -6414,6 +6567,70 @@ function showRiwayatCicilan(pesananId) {
             showHutangSummary(totalHutang);
         }
 
+        // ===============================
+// PASSWORD SYSTEM FOR BUYER ACCESS
+// ===============================
+
+// Password untuk akses pembeli (bisa diganti sesuai kebutuhan)
+const BUYER_PASSWORDS = {
+    'dsgjaya': true, // Password default
+    'dsgpembeli': true  // Password alternatif
+};
+
+// Fungsi untuk menampilkan modal password pembeli
+function showPembeliPasswordModal() {
+    closeModal('login-screen');
+    showModal('pembeli-password-modal');
+    
+    // Reset form
+    document.getElementById('pembeli-password-form').reset();
+    document.getElementById('pembeli-password').focus();
+}
+
+// Fungsi untuk handle login pembeli
+function handlePembeliLogin(e) {
+    e.preventDefault();
+    
+    const password = document.getElementById('pembeli-password').value;
+    
+    // Validasi password
+    if (!password) {
+        showNotification('Password harus diisi!', 'error');
+        return;
+    }
+    
+    // Cek password
+    if (BUYER_PASSWORDS[password]) {
+        // Login berhasil
+        currentUser = { 
+            email: 'buyer@brangkas.com', 
+            name: 'Pembeli',
+            role: 'buyer'
+        };
+        isAdmin = false;
+        
+        // Simpan ke localStorage
+        localStorage.setItem('brangkas_user', JSON.stringify(currentUser));
+        localStorage.setItem('brangkas_admin', 'false');
+        localStorage.setItem('brangkas_buyer', 'true');
+        
+        showApp();
+        showNotification('Berhasil masuk sebagai pembeli!', 'success');
+        closeModal('pembeli-password-modal');
+    } else {
+        // Password salah
+        showNotification('Password salah! Silakan coba lagi.', 'error');
+        document.getElementById('pembeli-password').focus();
+        
+        // Tambahkan efek shake pada input
+        const input = document.getElementById('pembeli-password');
+        input.style.animation = 'shake 0.5s ease-in-out';
+        setTimeout(() => {
+            input.style.animation = '';
+        }, 500);
+    }
+}
+
         // Fungsi untuk menampilkan ringkasan hutang di halaman keuangan
         function showHutangSummary(totalHutang) {
             let hutangSummary = document.getElementById('hutang-summary');
@@ -6747,6 +6964,72 @@ function updateLaporanPembayaranTable(pesananLunasBulan) {
         `;
     }).join('');
 }
+
+// Fungsi untuk logout pembeli
+function handleBuyerLogout() {
+    currentUser = null;
+    isAdmin = false;
+    
+    // Hapus dari localStorage
+    localStorage.removeItem('brangkas_user');
+    localStorage.removeItem('brangkas_admin');
+    localStorage.removeItem('brangkas_buyer');
+    
+    // Reset cart
+    cart = [];
+    saveCartToStorage();
+    updateCartUI();
+    
+    showLogin();
+    showNotification('Anda telah logout', 'info');
+}
+
+// Animasi shake untuk password salah
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-5px); }
+        75% { transform: translateX(5px); }
+    }
+    
+    .buyer-features {
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(37, 99, 235, 0.1) 100%);
+        border: 1px solid rgba(59, 130, 246, 0.2);
+        border-radius: var(--border-radius);
+        padding: 1rem;
+        margin: 1rem 0;
+    }
+    
+    .buyer-features h4 {
+        color: var(--info);
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .buyer-features ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .buyer-features li {
+        padding: 0.3rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+    
+    .buyer-features li i {
+        color: var(--success);
+        font-size: 0.8rem;
+    }
+`;
+document.head.appendChild(style);
 
         // ===============================
         // FORM HANDLERS
@@ -8922,5 +9205,48 @@ function updatePesananHutangTable(pesananList = null) {
         </div>
     </div>
 </div>
+
+<!-- Modal Password Pembeli -->
+<div class="modal" id="pembeli-password-modal">
+    <div class="modal-content" style="max-width: 400px;">
+        <div class="modal-header">
+            <div class="modal-title">Akses Pembeli</div>
+            <button class="close-modal" onclick="closeModal('pembeli-password-modal')">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div style="text-align: center; margin-bottom: 1.5rem;">
+                <div style="width: 60px; height: 60px; background: linear-gradient(135deg, var(--info) 0%, var(--info-dark) 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; color: white; font-size: 1.5rem;">
+                    <i class="fas fa-user"></i>
+                </div>
+                <h3 style="margin-bottom: 0.5rem; color: var(--text-primary);">Masuk sebagai Pembeli</h3>
+                <p style="color: var(--text-secondary); font-size: 0.9rem;">Masukkan password untuk mengakses sistem</p>
+            </div>
+            
+            <form id="pembeli-password-form">
+                <div class="form-group">
+                    <label for="pembeli-password">Password Pembeli</label>
+                    <input type="password" id="pembeli-password" class="form-control" placeholder="Masukkan password pembeli" required>
+                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem;">
+                        <i class="fas fa-info-circle"></i> Hubungi admin untuk mendapatkan password
+                    </div>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <i class="fas fa-sign-in-alt"></i> Masuk sebagai Pembeli
+                    </button>
+                </div>
+            </form>
+            
+            <div style="text-align: center; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--dark-surface-light);">
+                <button type="button" class="btn btn-secondary btn-sm" onclick="backToAdminLogin()">
+                    <i class="fas fa-arrow-left"></i> Kembali ke Login Admin
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>
