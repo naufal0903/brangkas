@@ -95,6 +95,52 @@
             --shadow-lg: 0 4px 20px rgba(0, 0, 0, 0.12);
             --shadow-xl: 0 8px 30px rgba(0, 0, 0, 0.15);
         }
+/* Di bagian CSS, tambahkan styling untuk halaman distributor */
+.jadwal-info {
+    background: var(--dark-surface-light);
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    margin-top: 1rem;
+}
+
+.jadwal-info .info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--dark-surface-lighter);
+}
+
+.jadwal-info .info-row:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.jadwal-info .info-label {
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.jadwal-info .info-value {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+/* Responsive design untuk halaman distributor */
+@media (max-width: 768px) {
+    .jadwal-info .info-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .jadwal-info .info-value {
+        text-align: right;
+        width: 100%;
+    }
+}
 
         /* Minimalist Theme Toggle Button */
         .theme-toggle {
@@ -1162,6 +1208,7 @@ body, .card, .sidebar, .modal-content, .form-control, .btn {
     border: 1px solid rgba(59, 130, 246, 0.3);
 }
 
+
         /* Checklist Styles */
         .checkbox-container {
             display: flex;
@@ -1201,6 +1248,52 @@ body, .card, .sidebar, .modal-content, .form-control, .btn {
             font-size: 12px;
             font-weight: bold;
         }
+
+
+        /* Styling untuk badge bendahara */
+.badge-bendahara-vyan {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(37, 99, 235, 0.2) 100%);
+    color: var(--info);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.badge-bendahara-ruuna {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(217, 119, 6, 0.2) 100%);
+    color: var(--warning);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+/* Styling untuk distributor info */
+.distributor-info {
+    background: var(--dark-surface-light);
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    margin-bottom: 1rem;
+    border-left: 4px solid var(--info);
+}
+
+.distributor-info h4 {
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+.distributor-meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.distributor-meta-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.3rem 0;
+    border-bottom: 1px solid var(--dark-surface-lighter);
+}
+
+.distributor-meta-item:last-child {
+    border-bottom: none;
+}
 
         /* Progress Bar Styles */
         .progress-bar {
@@ -2681,6 +2774,12 @@ body, .card, .sidebar, .modal-content, .form-control, .btn {
                         <i class="fas fa-hand-holding-usd"></i> Dashboard Bendahara
                     </a>
                 </li>
+                                <!-- Di dalam <ul class="nav-links"> -->
+                <li id="admin-distributor" style="display: none;">
+                    <a href="#" class="nav-link" data-page="distributor">
+                        <i class="fas fa-truck"></i> Setor ke Distributor
+                    </a>
+                </li>
             </ul>
         </div>
 
@@ -2817,6 +2916,7 @@ body, .card, .sidebar, .modal-content, .form-control, .btn {
                             <option value="">Semua Kategori</option>
                             <option value="Class 1">Class 1</option>
                             <option value="Class 2">Class 2</option>
+                            <option value="Class 3">Class 3</option>
                             <option value="Narcotics">Narcotics</option>
                             <option value="Heist-Stuff">Heist Stuff</option>
                             <option value="Ammo">Ammo</option>
@@ -3290,99 +3390,303 @@ body, .card, .sidebar, .modal-content, .form-control, .btn {
                 </div>
             </div>
 
-            <!-- Bendahara Page -->
-            <div class="page" id="bendahara-page">
-                <div class="header">
-                    <h1>Dashboard Bendahara</h1>
-                    <div class="user-info">
-                        <div class="user-avatar" id="user-avatar-bendahara">B</div>
-                        <button class="logout-btn" id="logout-btn-bendahara">
-                            <i class="fas fa-sign-out-alt"></i> Logout
-                        </button>
-                    </div>
-                </div>
+            
 
-                <!-- Stats Cards -->
-                <div class="bendahara-stats">
-                    <div class="stat-card">
-                        <div class="stat-value" id="total-uang-dikasih">$ 0</div>
-                        <div class="stat-label">Total Uang Dikasih</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="total-pesanan-dikasih">0</div>
-                        <div class="stat-label">Pesanan Dikasih</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="total-pesanan-belum">0</div>
-                        <div class="stat-label">Pesanan Belum Dikasih</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="rata-rata-dikasih">$ 0</div>
-                        <div class="stat-label">Rata-rata per Pesanan</div>
-                    </div>
-                </div>
+<!-- Di bagian HTML, tambahkan struktur baru untuk dashboard bendahara yang terbagi -->
+<div class="page" id="bendahara-page">
+    <div class="header">
+        <h1>Dashboard Bendahara</h1>
+        <div class="user-info">
+            <div class="user-avatar" id="user-avatar-bendahara">B</div>
+            <button class="logout-btn" id="logout-btn-bendahara">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+    </div>
 
-                <!-- Summary Section -->
-                <div class="bendahara-summary">
-                    <h3>Ringkasan Uang Dikasih ke Bendahara</h3>
-                    <div class="summary-grid">
-                        <div class="summary-item uang-dikasih-item">
-                            <div class="summary-item-label">Uang Sudah Dikasih</div>
-                            <div class="summary-item-value" id="summary-sudah-dikasih">$ 0</div>
-                        </div>
-                        <div class="summary-item uang-belum-dikasih-item">
-                            <div class="summary-item-label">Uang Belum Dikasih</div>
-                            <div class="summary-item-value" id="summary-belum-dikasih">$ 0</div>
-                        </div>
-                    </div>
-                </div>
+    <!-- Tabs untuk membagi laporan -->
+    <div class="tabs" style="margin-bottom: 2rem;">
+        <div class="tab active" data-tab="vyan">Vyan (Non-Narcotics)</div>
+        <div class="tab" data-tab="ruuna">Ruuna (Narcotics)</div>
+    </div>
 
-                <!-- Penerima Breakdown -->
-                <div class="table-container">
-                    <div class="table-header">
-                        <div class="table-title">Breakdown per Penerima</div>
-                    </div>
-                    <div class="table-content">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Penerima</th>
-                                    <th>Jumlah Pesanan</th>
-                                    <th>Total Uang</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody id="penerima-breakdown">
-                                <!-- Data akan diisi oleh JavaScript -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+    <!-- Tab Content untuk Vyan (Non-Narcotics) -->
+    <div class="tab-content active" id="vyan-tab">
+        <!-- Stats Cards untuk Vyan -->
+        <div class="bendahara-stats">
+            <div class="stat-card">
+                <div class="stat-value" id="vyan-total-uang-dikasih">$ 0</div>
+                <div class="stat-label">Total Uang Dikasih ke Vyan</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="vyan-total-pesanan-dikasih">0</div>
+                <div class="stat-label">Pesanan Dikasih ke Vyan</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="vyan-total-pesanan-belum">0</div>
+                <div class="stat-label">Pesanan Belum Dikasih ke Vyan</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="vyan-rata-rata-dikasih">$ 0</div>
+                <div class="stat-label">Rata-rata per Pesanan</div>
+            </div>
+        </div>
 
-                <!-- Recent Uang Dikasih -->
-                <div class="table-container" style="margin-top: 1.5rem;">
-                    <div class="table-header">
-                        <div class="table-title">Riwayat Uang Dikasih Terbaru</div>
-                    </div>
-                    <div class="table-content">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>ID Pesanan</th>
-                                    <th>Tanggal</th>
-                                    <th>Customer</th>
-                                    <th>Penerima</th>
-                                    <th>Total</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody id="recent-uang-dikasih">
-                                <!-- Data akan diisi oleh JavaScript -->
-                            </tbody>
-                        </table>
-                    </div>
+        <!-- Summary Section untuk Vyan -->
+        <div class="bendahara-summary">
+            <h3>Ringkasan Uang Dikasih ke Vyan</h3>
+            <div class="summary-grid">
+                <div class="summary-item uang-dikasih-item">
+                    <div class="summary-item-label">Uang Sudah Dikasih</div>
+                    <div class="summary-item-value" id="vyan-summary-sudah-dikasih">$ 0</div>
+                </div>
+                <div class="summary-item uang-belum-dikasih-item">
+                    <div class="summary-item-label">Uang Belum Dikasih</div>
+                    <div class="summary-item-value" id="vyan-summary-belum-dikasih">$ 0</div>
+                    <button class="btn btn-info btn-sm" onclick="showDetailUangBelumDikasih('vyan')" 
+                            style="margin-left: 10px; padding: 0.3rem 0.6rem;">
+                        <i class="fas fa-eye"></i> Detail
+                    </button>
                 </div>
             </div>
+        </div>
+
+        <!-- Recent Uang Dikasih ke Vyan -->
+        <div class="table-container" style="margin-top: 1.5rem;">
+            <div class="table-header">
+                <div class="table-title">Riwayat Uang Dikasih ke Vyan</div>
+            </div>
+            <div class="table-content">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID Pesanan</th>
+                            <th>Tanggal</th>
+                            <th>Customer</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recent-uang-dikasih-vyan">
+                        <!-- Data akan diisi oleh JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab Content untuk Ruuna (Narcotics) -->
+    <div class="tab-content" id="ruuna-tab">
+        <!-- Stats Cards untuk Ruuna -->
+        <div class="bendahara-stats">
+            <div class="stat-card">
+                <div class="stat-value" id="ruuna-total-uang-dikasih">$ 0</div>
+                <div class="stat-label">Total Uang Dikasih ke Ruuna</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="ruuna-total-pesanan-dikasih">0</div>
+                <div class="stat-label">Pesanan Dikasih ke Ruuna</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="ruuna-total-pesanan-belum">0</div>
+                <div class="stat-label">Pesanan Belum Dikasih ke Ruuna</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="ruuna-rata-rata-dikasih">$ 0</div>
+                <div class="stat-label">Rata-rata per Pesanan</div>
+            </div>
+        </div>
+
+        <!-- Summary Section untuk Ruuna -->
+        <div class="bendahara-summary">
+            <h3>Ringkasan Uang Dikasih ke Ruuna</h3>
+            <div class="summary-grid">
+                <div class="summary-item uang-dikasih-item">
+                    <div class="summary-item-label">Uang Sudah Dikasih</div>
+                    <div class="summary-item-value" id="ruuna-summary-sudah-dikasih">$ 0</div>
+                </div>
+                <div class="summary-item uang-belum-dikasih-item">
+                    <div class="summary-item-label">Uang Belum Dikasih</div>
+                    <div class="summary-item-value" id="ruuna-summary-belum-dikasih">$ 0</div>
+                    <button class="btn btn-info btn-sm" onclick="showDetailUangBelumDikasih('ruuna')" 
+                            style="margin-left: 10px; padding: 0.3rem 0.6rem;">
+                        <i class="fas fa-eye"></i> Detail
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Uang Dikasih ke Ruuna -->
+        <div class="table-container" style="margin-top: 1.5rem;">
+            <div class="table-header">
+                <div class="table-title">Riwayat Uang Dikasih ke Ruuna</div>
+            </div>
+            <div class="table-content">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID Pesanan</th>
+                            <th>Tanggal</th>
+                            <th>Customer</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recent-uang-dikasih-ruuna">
+                        <!-- Data akan diisi oleh JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+    <!-- Di dalam <div class="main-content"> -->
+<div class="page" id="distributor-page">
+    <div class="header">
+        <h1>Setor Uang ke Distributor</h1>
+        <div class="user-info">
+            <button class="btn btn-primary" id="jadwal-otomatis-btn">
+                <i class="fas fa-clock"></i> Atur Jadwal Otomatis
+            </button>
+            <button class="btn btn-success" id="setor-sekarang-btn">
+                <i class="fas fa-paper-plane"></i> Setor Sekarang
+            </button>
+        </div>
+    </div>
+
+    <!-- Ringkasan Distributor -->
+    <div class="cards">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Total Setoran Minggu Ini</div>
+                <div class="card-icon bg-primary">
+                    <i class="fas fa-money-bill-wave"></i>
+                </div>
+            </div>
+            <div class="card-value" id="total-setoran-minggu">$ 0</div>
+            <div class="card-desc">Uang yang akan disetor Rabu ini</div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Setoran Terakhir</div>
+                <div class="card-icon bg-success">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+            </div>
+            <div class="card-value" id="setoran-terakhir">-</div>
+            <div class="card-desc">Tanggal setoran terakhir</div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Jadwal Berikutnya</div>
+                <div class="card-icon bg-warning">
+                    <i class="fas fa-clock"></i>
+                </div>
+            </div>
+            <div class="card-value" id="jadwal-berikutnya">-</div>
+            <div class="card-desc">Setoran otomatis berikutnya</div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Status Distributor</div>
+                <div class="card-icon bg-info">
+                    <i class="fas fa-truck"></i>
+                </div>
+            </div>
+            <div class="card-value" id="status-distributor">AKTIF</div>
+            <div class="card-desc">Status sistem setoran</div>
+        </div>
+    </div>
+
+    <!-- Detail Setoran -->
+    <div class="tables">
+        <div class="table-container">
+            <div class="table-header">
+                <div class="table-title">Rincian Setoran Minggu Ini</div>
+                <button class="btn btn-info btn-sm" onclick="exportRincianSetoran()">
+                    <i class="fas fa-file-export"></i> Export
+                </button>
+            </div>
+            <div class="table-content">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Distributor</th>
+                            <th>Jumlah Pesanan</th>
+                            <th>Total Setoran</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rincian-setoran">
+                        <!-- Data akan diisi oleh JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <div class="table-header">
+                <div class="table-title">Riwayat Setoran</div>
+                <button class="btn btn-primary btn-sm" onclick="lihatSemuaRiwayat()">
+                    <i class="fas fa-eye"></i> Lihat Semua
+                </button>
+            </div>
+            <div class="table-content">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tanggal</th>
+                            <th>Distributor</th>
+                            <th>Jumlah</th>
+                            <th>Status</th>
+                            <th>Keterangan</th>
+                        </tr>
+                    </thead>
+                    <tbody id="riwayat-setoran">
+                        <!-- Data akan diisi oleh JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Jadwal Otomatis -->
+    <div class="chart-container">
+        <div class="chart-header">
+            <div class="chart-title">Jadwal Setoran Otomatis</div>
+            <div class="chart-actions">
+                <button class="btn btn-warning btn-sm" onclick="editJadwalOtomatis()">
+                    <i class="fas fa-edit"></i> Edit Jadwal
+                </button>
+            </div>
+        </div>
+        <div class="jadwal-info">
+            <div class="info-row">
+                <span class="info-label">Hari Setoran:</span>
+                <span class="info-value" id="jadwal-hari">Rabu</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Waktu Setoran:</span>
+                <span class="info-value" id="jadwal-waktu">00:00</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Setoran Berikutnya:</span>
+                <span class="info-value" id="jadwal-setoran-berikutnya">-</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Status Otomatis:</span>
+                <span class="info-value">
+                    <span class="badge badge-success" id="status-otomatis">AKTIF</span>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+</div>
 
             <!-- Footer -->
             <div class="footer">
@@ -3411,6 +3715,7 @@ body, .card, .sidebar, .modal-content, .form-control, .btn {
                             <option value="">Semua Kategori</option>
                             <option value="Class 1">Class 1</option>
                             <option value="Class 2">Class 2</option>
+                            <option value="Class 3">Class 3</option>
                             <option value="Narcotics">Narcotics</option>
                             <option value="Heist-Stuff">Heist Stuff</option>
                             <option value="Ammo">Ammo</option>
@@ -3465,6 +3770,7 @@ body, .card, .sidebar, .modal-content, .form-control, .btn {
                             <option value="">Semua Kategori</option>
                             <option value="Class 1">Class 1</option>
                             <option value="Class 2">Class 2</option>
+                            <option value="Class 3">Class 3</option>
                             <option value="Narcotics">Narcotics</option>
                             <option value="Heist-Stuff">Heist Stuff</option>
                             <option value="Ammo">Ammo</option>
@@ -3629,6 +3935,9 @@ body, .card, .sidebar, .modal-content, .form-control, .btn {
             'c4': 'images/c4.png',
             'meth': 'images/material.png',
             'oven': 'images/oven.png',
+            'kvr': 'images/kvr.png',
+            '.45': 'images/45.png',
+            
             // Fallback dan default
             'default': 'images/default.jpg'
         };
@@ -4081,6 +4390,10 @@ function initializeApp() {
     const savedAdmin = localStorage.getItem('brangkas_admin');
     const savedBuyer = localStorage.getItem('brangkas_buyer');
     
+    if (isAdmin) {
+        initializeDistributorSystem();
+    }
+
     if (savedUser) {
         currentUser = JSON.parse(savedUser);
         isAdmin = savedAdmin === 'true';
@@ -4111,6 +4424,15 @@ function initializeApp() {
             }
             
             console.log('🔄 Setting up event listeners...');
+
+            // Event listeners untuk distributor
+            document.getElementById('setor-sekarang-btn')?.addEventListener('click', function() {
+                showModal('setor-manual-modal');
+            });
+            
+            document.getElementById('jadwal-otomatis-btn')?.addEventListener('click', function() {
+                editJadwalOtomatis();
+            });
 
             const pembeliPasswordForm = document.getElementById('pembeli-password-form');
             if (pembeliPasswordForm) {
@@ -4382,6 +4704,7 @@ function showLogin() {
         function showApp() {
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('app').style.display = 'flex';
+            document.getElementById('admin-distributor').style.display = isAdmin ? 'block' : 'none';
 
             // Cek apakah user adalah pembeli
             const isBuyer = localStorage.getItem('brangkas_buyer') === 'true';
@@ -4407,6 +4730,14 @@ function showLogin() {
                 // Tampilkan/hide menu admin berdasarkan role
                 document.getElementById('admin-keuangan').style.display = isAdmin ? 'block' : 'none';
                 document.getElementById('admin-bendahara').style.display = isAdmin ? 'block' : 'none';
+            }
+
+            function initializeDistributorSystem() {
+                if (!isAdmin) return;
+                
+                loadDistributorData();
+                setupJadwalOtomatis();
+                updateDistributorDashboard();
             }
 
 
@@ -6724,7 +7055,7 @@ function handlePembeliLogin(e) {
 // BENDHARA DASHBOARD FUNCTIONS
 // ===============================
 
-// Update dashboard bendahara
+// Update fungsi updateBendaharaDashboard
 function updateBendaharaDashboard() {
     if (!isAdmin) return;
     
@@ -6733,9 +7064,136 @@ function updateBendaharaDashboard() {
         p.status_pembayaran === 'lunas' || p.uang_dibayar >= p.total
     );
     
+    // Pisahkan pesanan berdasarkan PENERIMA PEMBAYARAN (bukan kategori barang)
+    const { pesananVyan, pesananRuuna } = pisahkanPesananBerdasarkanPenerima(pesananLunas);
+    
+    // Update dashboard untuk Vyan
+    updateDashboardBendaharaPerPenerima(pesananVyan, 'vyan');
+    
+    // Update dashboard untuk Ruuna
+    updateDashboardBendaharaPerPenerima(pesananRuuna, 'ruuna');
+}
+
+// Fungsi untuk menampilkan breakdown semua penerima
+function showAllPenerimaBreakdown() {
+    const pesananLunas = pesananData.filter(p => 
+        p.status_pembayaran === 'lunas' || p.uang_dibayar >= p.total
+    );
+    
+    // Kelompokkan berdasarkan semua penerima
+    const penerimaMap = {};
+    
+    pesananLunas.forEach(pesanan => {
+        if (!pesanan.penerima_pembayaran) return;
+        
+        const penerima = pesanan.penerima_pembayaran;
+        if (!penerimaMap[penerima]) {
+            penerimaMap[penerima] = {
+                sudahDikasih: 0,
+                belumDikasih: 0,
+                totalSudah: 0,
+                totalBelum: 0,
+                pesanan: []
+            };
+        }
+        
+        if (pesanan.uang_diberikan_ke_bendahara) {
+            penerimaMap[penerima].sudahDikasih++;
+            penerimaMap[penerima].totalSudah += pesanan.total;
+        } else {
+            penerimaMap[penerima].belumDikasih++;
+            penerimaMap[penerima].totalBelum += pesanan.total;
+        }
+        
+        penerimaMap[penerima].pesanan.push(pesanan);
+    });
+    
+    // Tampilkan modal dengan breakdown semua penerima
+    let html = `
+        <div class="detail-pesanan-container">
+            <div class="detail-pesanan-header">
+                <div class="detail-pesanan-title">Breakdown Semua Penerima</div>
+                <span class="badge badge-info badge-sm">
+                    ${Object.keys(penerimaMap).length} PENERIMA
+                </span>
+            </div>
+    `;
+    
+    Object.entries(penerimaMap).forEach(([penerima, data]) => {
+        const totalPesanan = data.sudahDikasih + data.belumDikasih;
+        const totalUang = data.totalSudah + data.totalBelum;
+        
+        html += `
+            <div class="info-section" style="margin-bottom: 1rem;">
+                <h4>${penerima}</h4>
+                <div class="info-row">
+                    <span class="info-label">Total Pesanan:</span>
+                    <span class="info-value">${totalPesanan}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Total Uang:</span>
+                    <span class="info-value">${formatDollar(totalUang)}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Sudah Dikasih:</span>
+                    <span class="info-value" style="color: var(--success);">${formatDollar(data.totalSudah)} (${data.sudahDikasih} pesanan)</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Belum Dikasih:</span>
+                    <span class="info-value" style="color: var(--warning);">${formatDollar(data.totalBelum)} (${data.belumDikasih} pesanan)</span>
+                </div>
+                ${data.belumDikasih > 0 ? `
+                <div style="margin-top: 0.5rem;">
+                    <button class="btn btn-info btn-sm" onclick="showDetailUangBelumDikasihByPenerima('${penerima}')">
+                        <i class="fas fa-eye"></i> Lihat Detail Belum Dikasih
+                    </button>
+                </div>
+                ` : ''}
+            </div>
+        `;
+    });
+    
+    html += `</div>`;
+    
+    document.getElementById('detail-pesanan-content').innerHTML = html;
+    showModal('detail-pesanan-modal');
+}
+
+// Fungsi untuk menampilkan detail uang belum dikasih berdasarkan penerima tertentu
+function showDetailUangBelumDikasihByPenerima(penerima) {
+    const pesananLunas = pesananData.filter(p => 
+        (p.status_pembayaran === 'lunas' || p.uang_dibayar >= p.total) &&
+        p.penerima_pembayaran === penerima &&
+        !p.uang_diberikan_ke_bendahara
+    );
+    
+    // Gunakan fungsi yang sudah ada dengan parameter penerima
+    showDetailUangBelumDikasih(penerima.toLowerCase());
+}
+
+// FUNGSI YANG BENAR (ganti dengan ini):
+function pisahkanPesananBerdasarkanPenerima(pesananLunas) {
+    const pesananVyan = [];
+    const pesananRuuna = [];
+    
+    pesananLunas.forEach(pesanan => {
+        // Filter berdasarkan PENERIMA PEMBAYARAN, bukan kategori barang
+        if (pesanan.penerima_pembayaran === 'Vyan') {
+            pesananVyan.push(pesanan);
+        } else if (pesanan.penerima_pembayaran === 'Ruuna') {
+            pesananRuuna.push(pesanan);
+        }
+        // Jika tidak ada penerima atau penerima lain, tidak dimasukkan ke bendahara
+    });
+    
+    return { pesananVyan, pesananRuuna };
+}
+
+// Fungsi untuk mengupdate dashboard bendahara per penerima
+function updateDashboardBendaharaPerPenerima(pesanan, penerima) {
     // Hitung statistik
-    const uangSudahDikasih = pesananLunas.filter(p => p.uang_diberikan_ke_bendahara);
-    const uangBelumDikasih = pesananLunas.filter(p => !p.uang_diberikan_ke_bendahara);
+    const uangSudahDikasih = pesanan.filter(p => p.uang_diberikan_ke_bendahara);
+    const uangBelumDikasih = pesanan.filter(p => !p.uang_diberikan_ke_bendahara);
     
     const totalUangDikasih = uangSudahDikasih.reduce((sum, p) => sum + p.total, 0);
     const totalUangBelumDikasih = uangBelumDikasih.reduce((sum, p) => sum + p.total, 0);
@@ -6743,20 +7201,78 @@ function updateBendaharaDashboard() {
     const rataRataDikasih = uangSudahDikasih.length > 0 ? totalUangDikasih / uangSudahDikasih.length : 0;
     
     // Update stats cards
-    document.getElementById('total-uang-dikasih').textContent = formatDollar(totalUangDikasih);
-    document.getElementById('total-pesanan-dikasih').textContent = uangSudahDikasih.length;
-    document.getElementById('total-pesanan-belum').textContent = uangBelumDikasih.length;
-    document.getElementById('rata-rata-dikasih').textContent = formatDollar(rataRataDikasih);
+    document.getElementById(`${penerima}-total-uang-dikasih`).textContent = formatDollar(totalUangDikasih);
+    document.getElementById(`${penerima}-total-pesanan-dikasih`).textContent = uangSudahDikasih.length;
+    document.getElementById(`${penerima}-total-pesanan-belum`).textContent = uangBelumDikasih.length;
+    document.getElementById(`${penerima}-rata-rata-dikasih`).textContent = formatDollar(rataRataDikasih);
     
     // Update summary
-    document.getElementById('summary-sudah-dikasih').textContent = formatDollar(totalUangDikasih);
-    document.getElementById('summary-belum-dikasih').textContent = formatDollar(totalUangBelumDikasih);
-    
-    // Update breakdown per penerima
-    updatePenerimaBreakdown(pesananLunas);
+    document.getElementById(`${penerima}-summary-sudah-dikasih`).textContent = formatDollar(totalUangDikasih);
+    document.getElementById(`${penerima}-summary-belum-dikasih`).textContent = formatDollar(totalUangBelumDikasih);
     
     // Update recent uang dikasih
-    updateRecentUangDikasih(uangSudahDikasih);
+    updateRecentUangDikasihPerPenerima(uangSudahDikasih, penerima);
+}
+
+// Fungsi untuk mengupdate riwayat uang dikasih per penerima
+function updateRecentUangDikasihPerPenerima(uangSudahDikasih, penerima) {
+    const tableBody = document.getElementById(`recent-uang-dikasih-${penerima}`);
+    const recentData = uangSudahDikasih.slice(-10).reverse(); // 10 terbaru
+    
+    if (recentData.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="5" class="text-center">Belum ada uang yang dikasih ke ' + penerima + '</td></tr>';
+        return;
+    }
+    
+    tableBody.innerHTML = recentData.map(pesanan => `
+        <tr>
+            <td>
+                <div style="font-weight: 600; color: var(--primary);">${pesanan.id}</div>
+            </td>
+            <td>${formatDate(pesanan.tanggal)}</td>
+            <td>${pesanan.customer}</td>
+            <td>
+                <div style="font-weight: 700; color: var(--success);">${formatDollar(pesanan.total)}</div>
+            </td>
+            <td>
+                <span class="badge badge-success">
+                    <i class="fas fa-check"></i> SUDAH DIKASIH
+                </span>
+            </td>
+        </tr>
+    `).join('');
+}
+
+// Tambahkan event listener untuk tabs bendahara
+document.addEventListener('DOMContentLoaded', function() {
+    // Setup tabs untuk bendahara
+    const bendaharaTabs = document.querySelector('#bendahara-page .tabs');
+    if (bendaharaTabs) {
+        bendaharaTabs.addEventListener('click', function(e) {
+            if (e.target.closest('.tab')) {
+                const tab = e.target.closest('.tab');
+                const tabId = tab.getAttribute('data-tab');
+                switchBendaharaTab(tabId);
+            }
+        });
+    }
+});
+
+// Fungsi untuk switch tab bendahara
+function switchBendaharaTab(tabId) {
+    // Update tab active state
+    document.querySelectorAll('#bendahara-page .tab').forEach(tab => {
+        tab.classList.remove('active');
+        if (tab.getAttribute('data-tab') === tabId) {
+            tab.classList.add('active');
+        }
+    });
+    
+    // Update tab content
+    document.querySelectorAll('#bendahara-page .tab-content').forEach(content => {
+        content.classList.remove('active');
+    });
+    document.getElementById(`${tabId}-tab`).classList.add('active');
 }
 
 // Update breakdown per penerima
@@ -7144,6 +7660,949 @@ document.head.appendChild(style);
                     showNotification('Gagal menambah transaksi: ' + error.message, 'error');
                 });
         }
+
+
+        // ===============================
+// DISTRIBUTOR SETORAN SYSTEM
+// ===============================
+
+// Data untuk sistem distributor
+let distributorData = [];
+let setoranData = [];
+let jadwalOtomatis = {
+    hari: 3, // Rabu (0=Minggu, 1=Senin, ..., 6=Sabtu)
+    waktu: "00:00",
+    aktif: true,
+    setoranBerikutnya: null
+};
+
+// Distributor Configuration - MODIFIED untuk 3 distributor dengan pembagian kategori
+const distributorConfig = [
+    {
+        nama: "BOA",
+        kategori: ["Class 1", "Class 2", "Ammo", "Armor", "Attachment"],
+        kontak: "-",
+        minimumSetoran: 0,
+        bendahara: "Vyan" // Non-Narcotics
+    },
+    {
+        nama: "RDMC", 
+        kategori: ["Attachment"],
+        kontak: "-",
+        minimumSetoran: 0,
+        bendahara: "Ruuna" // Narcotics
+    },
+    {
+        nama: "HT",
+        kategori: ["Class 1", "Class 2","Class 3", "Ammo", "Armor", "Attachment","Narcotics"],
+        kontak: "-",
+        minimumSetoran: 0,
+        bendahara: "Vyan" // Non-Narcotics (default)
+    }
+];
+
+// Initialize distributor system
+function initializeDistributorSystem() {
+    loadDistributorData();
+    setupJadwalOtomatis();
+    updateDistributorDashboard();
+}
+
+// Load data distributor dari Firebase
+function loadDistributorData() {
+    // Load data setoran
+    database.ref('setoran_distributor').on('value', (snapshot) => {
+        const newSetoranData = [];
+        if (snapshot.exists()) {
+            snapshot.forEach((childSnapshot) => {
+                const setoran = childSnapshot.val();
+                setoran.id = childSnapshot.key;
+                newSetoranData.push(setoran);
+            });
+        }
+        
+        if (JSON.stringify(setoranData) !== JSON.stringify(newSetoranData)) {
+            setoranData = newSetoranData;
+            updateDistributorDashboard();
+        }
+    });
+
+    // Load jadwal otomatis
+    database.ref('jadwal_setoran').once('value').then((snapshot) => {
+        if (snapshot.exists()) {
+            jadwalOtomatis = snapshot.val();
+            updateJadwalDisplay();
+        }
+    });
+}
+
+// Setup jadwal otomatis
+function setupJadwalOtomatis() {
+    if (!jadwalOtomatis.aktif) return;
+
+    // Hitung waktu setoran berikutnya
+    calculateNextSetoranTime();
+    
+    // Setup interval untuk pengecekan
+    setInterval(() => {
+        checkAutoSetoran();
+    }, 60000); // Cek setiap menit
+}
+
+// Hitung waktu setoran berikutnya
+function calculateNextSetoranTime() {
+    const now = new Date();
+    const hariIni = now.getDay();
+    const [jam, menit] = jadwalOtomatis.waktu.split(':').map(Number);
+    
+    let daysUntilNext = jadwalOtomatis.hari - hariIni;
+    if (daysUntilNext < 0 || (daysUntilNext === 0 && 
+        (now.getHours() > jam || (now.getHours() === jam && now.getMinutes() >= menit)))) {
+        daysUntilNext += 7;
+    }
+    
+    const nextSetoran = new Date(now);
+    nextSetoran.setDate(now.getDate() + daysUntilNext);
+    nextSetoran.setHours(jam, menit, 0, 0);
+    
+    jadwalOtomatis.setoranBerikutnya = nextSetoran.toISOString();
+    updateJadwalDisplay();
+}
+
+// Cek apakah sudah waktunya setoran otomatis
+function checkAutoSetoran() {
+    if (!jadwalOtomatis.aktif) return;
+    
+    const now = new Date();
+    const nextSetoran = new Date(jadwalOtomatis.setoranBerikutnya);
+    
+    if (now >= nextSetoran) {
+        // Waktunya setoran otomatis
+        prosesSetoranOtomatis();
+        
+        // Hitung jadwal berikutnya
+        calculateNextSetoranTime();
+    }
+}
+
+// Proses setoran otomatis
+function prosesSetoranOtomatis() {
+    console.log('🔄 Memulai setoran otomatis...');
+    
+    // Hitung total setoran untuk setiap distributor
+    const setoranMingguIni = hitungSetoranMingguIni();
+    
+    // Proses setoran untuk setiap distributor
+    setoranMingguIni.forEach(setoran => {
+        if (setoran.total > 0) {
+            buatSetoranOtomatis(setoran);
+        }
+    });
+    
+    // Kirim notifikasi
+    showNotification('Setoran otomatis berhasil diproses!', 'success');
+    
+    // Kirim notifikasi Discord
+    sendDiscordSetoranNotification(setoranMingguIni);
+}
+
+// Fungsi untuk menghitung setoran berdasarkan PENERIMA PEMBAYARAN - CORRECTED
+function hitungSetoranMingguIni() {
+    const satuMingguLalu = new Date();
+    satuMingguLalu.setDate(satuMingguLalu.getDate() - 7);
+    
+    // Filter pesanan dari minggu ini yang sudah lunas
+    const pesananMingguIni = pesananData.filter(pesanan => {
+        const tanggalPesanan = new Date(pesanan.tanggal);
+        return tanggalPesanan >= satuMingguLalu && 
+               (pesanan.status_pembayaran === 'lunas' || pesanan.uang_dibayar >= pesanan.total);
+    });
+    
+    // Kelompokkan berdasarkan distributor dan PENERIMA PEMBAYARAN
+    const setoranPerDistributor = distributorConfig.map(distributor => {
+        // Filter pesanan berdasarkan PENERIMA yang sesuai dengan bendahara distributor
+        const pesananDistributor = pesananMingguIni.filter(pesanan => {
+            // Setoran untuk Vyan: pesanan yang diterima Vyan, Romee, Angie
+            if (distributor.bendahara === 'Vyan') {
+                return ['Vyan', 'Romee', 'Angie'].includes(pesanan.penerima_pembayaran);
+            }
+            // Setoran untuk Ruuna: pesanan yang diterima Ruuna, Asap
+            else if (distributor.bendahara === 'Ruuna') {
+                return ['Ruuna', 'Asap'].includes(pesanan.penerima_pembayaran);
+            }
+            return false;
+        });
+        
+        // Filter tambahan: hanya pesanan yang mengandung barang dari kategori distributor ini
+        const pesananFinal = pesananDistributor.filter(pesanan => {
+            return pesanan.items.some(item => {
+                const barang = barangData.find(b => b.id === item.id);
+                return barang && distributor.kategori.includes(barang.kategori);
+            });
+        });
+        
+        const total = pesananFinal.reduce((sum, pesanan) => sum + pesanan.total, 0);
+        
+        return {
+            distributor: distributor.nama,
+            bendahara: distributor.bendahara,
+            jumlahPesanan: pesananFinal.length,
+            total: total,
+            pesanan: pesananFinal,
+            kategori: distributor.kategori.join(', '),
+            penerima: distributor.bendahara === 'Vyan' ? 'Vyan/Romee/Angie' : 'Ruuna/Asap'
+        };
+    });
+    
+    return setoranPerDistributor;
+}
+
+// Fungsi untuk memisahkan pesanan berdasarkan bendahara (Vyan/Ruuna)
+function pisahkanPesananBerdasarkanBendahara(pesananList) {
+    const pesananVyan = [];
+    const pesananRuuna = [];
+    
+    pesananList.forEach(pesanan => {
+        // Kelompokkan berdasarkan penerima pembayaran
+        if (pesanan.penerima_pembayaran === 'Vyan' || pesanan.penerima_pembayaran === 'Romee' || pesanan.penerima_pembayaran === 'Angie') {
+            pesananVyan.push(pesanan);
+        } else if (pesanan.penerima_pembayaran === 'Ruuna' || pesanan.penerima_pembayaran === 'Asap') {
+            pesananRuuna.push(pesanan);
+        } else {
+            // Default ke Vyan jika tidak ada penerima
+            pesananVyan.push(pesanan);
+        }
+    });
+    
+    return { pesananVyan, pesananRuuna };
+}
+
+// Buat setoran otomatis
+function buatSetoranOtomatis(setoran) {
+    const newSetoran = {
+        distributor: setoran.distributor,
+        jumlah: setoran.total,
+        jumlahPesanan: setoran.jumlahPesanan,
+        tanggal: new Date().toISOString(),
+        jenis: 'otomatis',
+        status: 'selesai',
+        keterangan: `Setoran otomatis mingguan - ${setoran.jumlahPesanan} pesanan`
+    };
+    
+    // Simpan ke Firebase
+    database.ref('setoran_distributor').push(newSetoran)
+        .then(() => {
+            console.log(`✅ Setoran otomatis untuk ${setoran.distributor} berhasil: ${formatDollar(setoran.total)}`);
+        })
+        .catch(error => {
+            console.error(`❌ Gagal menyimpan setoran untuk ${setoran.distributor}:`, error);
+        });
+}
+
+// Update ringkasan dashboard distributor
+function updateDistributorDashboard() {
+    if (!isAdmin) return;
+    
+    // Update summary cards
+    const setoranMingguIni = hitungSetoranMingguIni();
+    const totalSetoranMinggu = setoranMingguIni.reduce((sum, s) => sum + s.total, 0);
+    
+    // Hitung per bendahara
+    const setoranVyan = setoranMingguIni.filter(s => s.bendahara === 'Vyan').reduce((sum, s) => sum + s.total, 0);
+    const setoranRuuna = setoranMingguIni.filter(s => s.bendahara === 'Ruuna').reduce((sum, s) => sum + s.total, 0);
+    
+    document.getElementById('total-setoran-minggu').textContent = formatDollar(totalSetoranMinggu);
+    
+    // Update cards tambahan untuk bendahara
+    updateBendaharaCards(setoranVyan, setoranRuuna);
+    
+    // Update setoran terakhir
+    const setoranTerakhir = setoranData[setoranData.length - 1];
+    if (setoranTerakhir) {
+        document.getElementById('setoran-terakhir').textContent = formatDate(setoranTerakhir.tanggal);
+    }
+    
+    // Update jadwal berikutnya
+    updateJadwalDisplay();
+    
+    // Update rincian setoran
+    updateRincianSetoran(setoranMingguIni);
+    
+    // Update riwayat setoran
+    updateRiwayatSetoran();
+}
+
+// Tambahkan cards untuk bendahara
+function updateBendaharaCards(setoranVyan, setoranRuuna) {
+    let bendaharaCards = document.getElementById('bendahara-cards');
+    
+    if (!bendaharaCards) {
+        bendaharaCards = document.createElement('div');
+        bendaharaCards.id = 'bendahara-cards';
+        bendaharaCards.className = 'cards';
+        bendaharaCards.innerHTML = `
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Setoran untuk Vyan</div>
+                    <div class="card-icon bg-info">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                </div>
+                <div class="card-value" id="setoran-vyan">$ 0</div>
+                <div class="card-desc">Non-Narcotics (BOA, HT, RDMC)</div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Setoran untuk Ruuna</div>
+                    <div class="card-icon bg-warning">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                </div>
+                <div class="card-value" id="setoran-ruuna">$ 0</div>
+                <div class="card-desc">Narcotics (HT)</div>
+            </div>
+        `;
+        
+        // Sisipkan setelah cards utama
+        const mainCards = document.querySelector('#distributor-page .cards');
+        mainCards.parentNode.insertBefore(bendaharaCards, mainCards.nextSibling);
+    }
+    
+    document.getElementById('setoran-vyan').textContent = formatDollar(setoranVyan);
+    document.getElementById('setoran-ruuna').textContent = formatDollar(setoranRuuna);
+}
+
+// Update display jadwal
+function updateJadwalDisplay() {
+    if (jadwalOtomatis.setoranBerikutnya) {
+        const nextDate = new Date(jadwalOtomatis.setoranBerikutnya);
+        document.getElementById('jadwal-berikutnya').textContent = formatDate(nextDate.toISOString());
+        document.getElementById('jadwal-setoran-berikutnya').textContent = formatDate(nextDate.toISOString());
+    }
+    
+    // Update info jadwal
+    const hariMap = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+    document.getElementById('jadwal-hari').textContent = hariMap[jadwalOtomatis.hari];
+    document.getElementById('jadwal-waktu').textContent = jadwalOtomatis.waktu;
+    
+    // Update status otomatis
+    const statusElement = document.getElementById('status-otomatis');
+    if (jadwalOtomatis.aktif) {
+        statusElement.textContent = 'AKTIF';
+        statusElement.className = 'badge badge-success';
+    } else {
+        statusElement.textContent = 'NON-AKTIF';
+        statusElement.className = 'badge badge-danger';
+    }
+}
+
+// Update rincian setoran dengan info penerima yang benar
+function updateRincianSetoran(setoranMingguIni) {
+    const tableBody = document.getElementById('rincian-setoran');
+    
+    if (setoranMingguIni.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="7" class="text-center">Tidak ada setoran minggu ini</td></tr>';
+        return;
+    }
+    
+    tableBody.innerHTML = setoranMingguIni.map(setoran => {
+        const distributor = distributorConfig.find(d => d.nama === setoran.distributor);
+        const minimumTerpenuhi = setoran.total >= (distributor?.minimumSetoran || 0);
+        
+        return `
+            <tr>
+                <td>
+                    <div style="font-weight: 600;">${setoran.distributor}</div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted);">
+                        ${distributor?.kontak || '-'}
+                    </div>
+                    <div style="font-size: 0.7rem; color: var(--info); margin-top: 0.2rem;">
+                        <i class="fas fa-tags"></i> ${setoran.kategori}
+                    </div>
+                </td>
+                <td>${setoran.jumlahPesanan} pesanan</td>
+                <td>
+                    <div style="font-weight: 700; color: var(--success);">${formatDollar(setoran.total)}</div>
+                    ${distributor?.minimumSetoran ? `
+                    <div style="font-size: 0.75rem; color: var(--text-muted);">
+                        Minimum: ${formatDollar(distributor.minimumSetoran)}
+                    </div>
+                    ` : ''}
+                </td>
+                <td>
+                    <span class="badge ${setoran.bendahara === 'Vyan' ? 'badge-info' : 'badge-warning'} badge-sm">
+                        ${setoran.bendahara}
+                    </span>
+                </td>
+                <td>
+                    <div style="font-size: 0.75rem; color: var(--text-secondary);">
+                        ${setoran.penerima}
+                    </div>
+                </td>
+                <td>
+                    <span class="badge ${minimumTerpenuhi ? 'badge-success' : 'badge-warning'}">
+                        ${minimumTerpenuhi ? 'SIAP SETOR' : 'BELUM MINIMUM'}
+                    </span>
+                </td>
+                <td>
+                    <button class="btn btn-primary btn-sm" onclick="setorManual('${setoran.distributor}', ${setoran.total})" 
+                        ${!minimumTerpenuhi ? 'disabled title="Belum mencapai minimum setoran"' : ''}>
+                        <i class="fas fa-paper-plane"></i> Setor
+                    </button>
+                    <button class="btn btn-info btn-sm" onclick="lihatDetailSetoran('${setoran.distributor}')">
+                        <i class="fas fa-eye"></i> Detail
+                    </button>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+// Update riwayat setoran
+function updateRiwayatSetoran() {
+    const tableBody = document.getElementById('riwayat-setoran');
+    const recentSetoran = setoranData.slice(-5).reverse(); // 5 terbaru
+    
+    if (recentSetoran.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="5" class="text-center">Belum ada riwayat setoran</td></tr>';
+        return;
+    }
+    
+    tableBody.innerHTML = recentSetoran.map(setoran => `
+        <tr>
+            <td>${formatDate(setoran.tanggal)}</td>
+            <td>${setoran.distributor}</td>
+            <td>${formatDollar(setoran.jumlah)}</td>
+            <td>
+                <span class="badge ${setoran.status === 'selesai' ? 'badge-success' : 'badge-warning'}">
+                    ${setoran.status === 'selesai' ? 'SELESAI' : 'PENDING'}
+                </span>
+            </td>
+            <td>${setoran.keterangan || '-'}</td>
+        </tr>
+    `).join('');
+}
+
+// Update modal setor manual dengan info bendahara
+function setorManual(distributor, jumlah) {
+    const distributorInfo = distributorConfig.find(d => d.nama === distributor);
+    
+    document.getElementById('distributor-setor').value = distributor;
+    document.getElementById('jumlah-setor').value = jumlah || '';
+    document.getElementById('keterangan-setor').value = '';
+    document.getElementById('tanggal-setor').value = new Date().toISOString().slice(0, 16);
+    
+    // Tampilkan info bendahara di modal
+    const modalTitle = document.querySelector('#setor-manual-modal .modal-title');
+    if (modalTitle && distributorInfo) {
+        modalTitle.innerHTML = `Setor ke ${distributor} <small style="font-size: 0.7em; color: var(--info);">(${distributorInfo.bendahara})</small>`;
+    }
+    
+    showModal('setor-manual-modal');
+}
+
+// Proses setor manual
+function prosesSetorManual() {
+    const distributor = document.getElementById('distributor-setor').value;
+    const jumlah = parseInt(document.getElementById('jumlah-setor').value);
+    const keterangan = document.getElementById('keterangan-setor').value;
+    const tanggal = document.getElementById('tanggal-setor').value;
+    
+    if (!distributor || !jumlah || !tanggal) {
+        showNotification('Semua field harus diisi!', 'error');
+        return;
+    }
+    
+    const distributorConfigItem = distributorConfig.find(d => d.nama === distributor);
+    if (distributorConfigItem && jumlah < distributorConfigItem.minimumSetoran) {
+        showNotification(`Jumlah setoran harus minimal ${formatDollar(distributorConfigItem.minimumSetoran)} untuk ${distributor}!`, 'warning');
+        return;
+    }
+    
+    const newSetoran = {
+        distributor: distributor,
+        jumlah: jumlah,
+        keterangan: keterangan || `Setoran manual - ${distributor}`,
+        tanggal: new Date(tanggal).toISOString(),
+        jenis: 'manual',
+        status: 'selesai'
+    };
+    
+    // Simpan ke Firebase
+    database.ref('setoran_distributor').push(newSetoran)
+        .then(() => {
+            showNotification(`Setoran ke ${distributor} berhasil!`, 'success');
+            closeModal('setor-manual-modal');
+            
+            // Kirim notifikasi Discord
+            sendDiscordSetoranManualNotification(newSetoran);
+        })
+        .catch(error => {
+            showNotification('Gagal menyimpan setoran: ' + error.message, 'error');
+        });
+}
+
+// Tampilkan modal jadwal otomatis
+function editJadwalOtomatis() {
+    document.getElementById('hari-setor').value = jadwalOtomatis.hari;
+    document.getElementById('waktu-setor').value = jadwalOtomatis.waktu;
+    document.getElementById('aktifkan-otomatis').checked = jadwalOtomatis.aktif;
+    
+    showModal('jadwal-otomatis-modal');
+}
+
+// Simpan jadwal otomatis
+function simpanJadwalOtomatis() {
+    const hari = parseInt(document.getElementById('hari-setor').value);
+    const waktu = document.getElementById('waktu-setor').value;
+    const aktif = document.getElementById('aktifkan-otomatis').checked;
+    
+    jadwalOtomatis = {
+        hari: hari,
+        waktu: waktu,
+        aktif: aktif,
+        setoranBerikutnya: jadwalOtomatis.setoranBerikutnya
+    };
+    
+    // Hitung ulang jadwal berikutnya
+    calculateNextSetoranTime();
+    
+    // Simpan ke Firebase
+    database.ref('jadwal_setoran').set(jadwalOtomatis)
+        .then(() => {
+            showNotification('Jadwal otomatis berhasil disimpan!', 'success');
+            closeModal('jadwal-otomatis-modal');
+            updateDistributorDashboard();
+        })
+        .catch(error => {
+            showNotification('Gagal menyimpan jadwal: ' + error.message, 'error');
+        });
+}
+
+// Update export function dengan info bendahara
+function exportRincianSetoran() {
+    const setoranMingguIni = hitungSetoranMingguIni();
+    const totalSetoran = setoranMingguIni.reduce((sum, s) => sum + s.total, 0);
+    
+    let exportText = `RINCIAN SETORAN DISTRIBUTOR\n`;
+    exportText += `Periode: ${new Date().toLocaleDateString('id-ID')}\n`;
+    exportText += `Total Setoran: ${formatDollar(totalSetoran)}\n\n`;
+    
+    // Ringkasan per bendahara
+    const setoranVyan = setoranMingguIni.filter(s => s.bendahara === 'Vyan').reduce((sum, s) => sum + s.total, 0);
+    const setoranRuuna = setoranMingguIni.filter(s => s.bendahara === 'Ruuna').reduce((sum, s) => sum + s.total, 0);
+    
+    exportText += `RINGKASAN PER BENDAHARA:\n`;
+    exportText += `• Vyan (Non-Narcotics): ${formatDollar(setoranVyan)}\n`;
+    exportText += `• Ruuna (Narcotics): ${formatDollar(setoranRuuna)}\n\n`;
+    
+    exportText += `DETAIL PER DISTRIBUTOR:\n`;
+    exportText += `======================\n\n`;
+    
+    setoranMingguIni.forEach((setoran, index) => {
+        exportText += `${index + 1}. ${setoran.distributor}\n`;
+        exportText += `   Bendahara: ${setoran.bendahara}\n`;
+        exportText += `   Kategori: ${setoran.kategori}\n`;
+        exportText += `   Jumlah Pesanan: ${setoran.jumlahPesanan}\n`;
+        exportText += `   Total Setoran: ${formatDollar(setoran.total)}\n`;
+        exportText += `   Status: ${setoran.total >= (distributorConfig.find(d => d.nama === setoran.distributor)?.minimumSetoran || 0) ? 'SIAP SETOR' : 'BELUM MINIMUM'}\n\n`;
+    });
+    
+    // Salin ke clipboard
+    navigator.clipboard.writeText(exportText)
+        .then(() => {
+            showNotification('Rincian setoran berhasil disalin!', 'success');
+        })
+        .catch(err => {
+            console.error('Gagal menyalin teks: ', err);
+            fallbackCopyTextToClipboard(exportText);
+        });
+}
+
+// Update detail setoran dengan informasi lengkap
+function lihatDetailSetoran(distributor) {
+    const setoranMingguIni = hitungSetoranMingguIni();
+    const setoranDistributor = setoranMingguIni.find(s => s.distributor === distributor);
+    const distributorInfo = distributorConfig.find(d => d.nama === distributor);
+    
+    if (!setoranDistributor) return;
+    
+    let detailHtml = `
+        <div class="detail-pesanan-container">
+            <div class="detail-pesanan-header">
+                <div class="detail-pesanan-title">Detail Setoran - ${distributor}</div>
+                <span class="badge badge-info badge-sm">
+                    ${setoranDistributor.jumlahPesanan} PESANAN
+                </span>
+            </div>
+            
+            <div class="info-section">
+                <div class="info-row">
+                    <span class="info-label">Distributor:</span>
+                    <span class="info-value">${distributor}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Bendahara:</span>
+                    <span class="info-value">
+                        <span class="badge ${setoranDistributor.bendahara === 'Vyan' ? 'badge-info' : 'badge-warning'}">
+                            ${setoranDistributor.bendahara}
+                        </span>
+                    </span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Kategori:</span>
+                    <span class="info-value">${setoranDistributor.kategori}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Total Setoran:</span>
+                    <span class="info-value" style="color: var(--success); font-weight: 700;">${formatDollar(setoranDistributor.total)}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Jumlah Pesanan:</span>
+                    <span class="info-value">${setoranDistributor.jumlahPesanan} pesanan</span>
+                </div>
+                ${distributorInfo?.minimumSetoran ? `
+                <div class="info-row">
+                    <span class="info-label">Minimum Setoran:</span>
+                    <span class="info-value">${formatDollar(distributorInfo.minimumSetoran)}</span>
+                </div>
+                ` : ''}
+            </div>
+            
+            <h4 style="margin: 1.5rem 0 1rem 0;">Daftar Pesanan</h4>
+            <div style="max-height: 300px; overflow-y: auto;">
+    `;
+    
+    if (setoranDistributor.pesanan.length === 0) {
+        detailHtml += `
+            <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                <i class="fas fa-box-open" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                <p>Tidak ada pesanan untuk distributor ini</p>
+            </div>
+        `;
+    } else {
+        detailHtml += `
+            <table class="compact-table">
+                <thead>
+                    <tr>
+                        <th>ID Pesanan</th>
+                        <th>Customer</th>
+                        <th>Penerima</th>
+                        <th>Total</th>
+                        <th>Tanggal</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+        
+        setoranDistributor.pesanan.forEach(pesanan => {
+            detailHtml += `
+                <tr>
+                    <td>${pesanan.id}</td>
+                    <td>${pesanan.customer}</td>
+                    <td>
+                        <span class="penerima-badge">
+                            ${pesanan.penerima_pembayaran || '-'}
+                        </span>
+                    </td>
+                    <td>${formatDollar(pesanan.total)}</td>
+                    <td>${formatDate(pesanan.tanggal)}</td>
+                </tr>
+            `;
+        });
+        
+        detailHtml += `</tbody></table>`;
+    }
+    
+    detailHtml += `
+            </div>
+            
+            <div class="compact-actions">
+                <button class="btn btn-primary btn-compact" onclick="setorManual('${distributor}', ${setoranDistributor.total})">
+                    <i class="fas fa-paper-plane"></i> Setor Sekarang
+                </button>
+                <button class="btn btn-secondary btn-compact" onclick="closeModal('detail-pesanan-modal')">
+                    <i class="fas fa-times"></i> Tutup
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('detail-pesanan-content').innerHTML = detailHtml;
+    showModal('detail-pesanan-modal');
+}
+
+// Lihat semua riwayat
+function lihatSemuaRiwayat() {
+    let riwayatHtml = `
+        <div class="detail-pesanan-container">
+            <div class="detail-pesanan-header">
+                <div class="detail-pesanan-title">Semua Riwayat Setoran</div>
+                <span class="badge badge-info badge-sm">
+                    ${setoranData.length} SETORAN
+                </span>
+            </div>
+            
+            <div style="max-height: 500px; overflow-y: auto;">
+                <table class="compact-table">
+                    <thead>
+                        <tr>
+                            <th>Tanggal</th>
+                            <th>Distributor</th>
+                            <th>Jumlah</th>
+                            <th>Jenis</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+    `;
+    
+    if (setoranData.length === 0) {
+        riwayatHtml += `
+            <tr>
+                <td colspan="5" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                    <i class="fas fa-history" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                    <p>Belum ada riwayat setoran</p>
+                </td>
+            </tr>
+        `;
+    } else {
+        // Urutkan dari yang terbaru
+        const sortedSetoran = [...setoranData].sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal));
+        
+        sortedSetoran.forEach(setoran => {
+            riwayatHtml += `
+                <tr>
+                    <td>${formatDate(setoran.tanggal)}</td>
+                    <td>${setoran.distributor}</td>
+                    <td style="color: var(--success); font-weight: 600;">${formatDollar(setoran.jumlah)}</td>
+                    <td>
+                        <span class="badge ${setoran.jenis === 'otomatis' ? 'badge-primary' : 'badge-info'} badge-sm">
+                            ${setoran.jenis === 'otomatis' ? 'OTOMATIS' : 'MANUAL'}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="badge ${setoran.status === 'selesai' ? 'badge-success' : 'badge-warning'} badge-sm">
+                            ${setoran.status === 'selesai' ? 'SELESAI' : 'PENDING'}
+                        </span>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+    
+    riwayatHtml += `
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="compact-actions">
+                <button class="btn btn-info btn-compact" onclick="exportRiwayatSetoran()">
+                    <i class="fas fa-download"></i> Export Riwayat
+                </button>
+                <button class="btn btn-secondary btn-compact" onclick="closeModal('detail-pesanan-modal')">
+                    <i class="fas fa-times"></i> Tutup
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('detail-pesanan-content').innerHTML = riwayatHtml;
+    showModal('detail-pesanan-modal');
+}
+
+// Export riwayat setoran
+function exportRiwayatSetoran() {
+    let csvContent = "Tanggal,Distributor,Jumlah,Jenis,Status,Keterangan\n";
+    
+    // Urutkan dari yang terbaru
+    const sortedSetoran = [...setoranData].sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal));
+    
+    sortedSetoran.forEach(setoran => {
+        const row = [
+            formatDate(setoran.tanggal),
+            `"${setoran.distributor}"`,
+            setoran.jumlah,
+            setoran.jenis,
+            setoran.status,
+            `"${setoran.keterangan || ''}"`
+        ].join(',');
+        
+        csvContent += row + '\n';
+    });
+    
+    // Buat dan download file CSV
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    
+    link.setAttribute("href", url);
+    link.setAttribute("download", `riwayat_setoran_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    showNotification('Riwayat setoran berhasil diexport!', 'success');
+}
+
+// ===============================
+// DISCORD NOTIFICATION FOR SETORAN
+// ===============================
+
+// Kirim notifikasi setoran otomatis ke Discord
+async function sendDiscordSetoranNotification(setoranMingguIni) {
+    if (!DISCORD_WEBHOOK_URL || DISCORD_WEBHOOK_URL.includes('YOUR_WEBHOOK_URL')) {
+        return;
+    }
+
+    try {
+        const totalSetoran = setoranMingguIni.reduce((sum, s) => sum + s.total, 0);
+        const totalPesanan = setoranMingguIni.reduce((sum, s) => sum + s.jumlahPesanan, 0);
+
+        const embed = {
+            title: "💰 SETORAN OTOMATIS BERHASIL",
+            color: 0x00ff00, // Hijau
+            description: `Setoran otomatis mingguan telah berhasil diproses`,
+            fields: [
+                {
+                    name: "📊 Total Setoran",
+                    value: `**${formatDollar(totalSetoran)}**`,
+                    inline: true
+                },
+                {
+                    name: "📦 Total Pesanan",
+                    value: `**${totalPesanan} pesanan**`,
+                    inline: true
+                },
+                {
+                    name: "📅 Periode",
+                    value: `Minggu ini`,
+                    inline: true
+                }
+            ],
+            timestamp: new Date().toISOString(),
+            footer: {
+                text: "Brangkas Distributor System • " + new Date().getFullYear(),
+                icon_url: "https://cdn-icons-png.flaticon.com/512/2331/2331966.png"
+            },
+            thumbnail: {
+                url: "https://cdn-icons-png.flaticon.com/512/3135/3135692.png"
+            }
+        };
+
+        // Tambahkan detail per distributor
+        setoranMingguIni.forEach(setoran => {
+            if (setoran.total > 0) {
+                embed.fields.push({
+                    name: `🏢 ${setoran.distributor}`,
+                    value: `${formatDollar(setoran.total)} (${setoran.jumlahPesanan} pesanan)`,
+                    inline: true
+                });
+            }
+        });
+
+        const payload = {
+            embeds: [embed],
+            username: "Brangkas Distributor Bot",
+            avatar_url: "https://cdn-icons-png.flaticon.com/512/2331/2331966.png",
+            content: "💸 **SETORAN OTOMATIS BERHASIL!**"
+        };
+
+        const response = await fetch(DISCORD_WEBHOOK_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+            console.log('✅ Notifikasi setoran otomatis berhasil dikirim');
+            return true;
+        } else {
+            console.error('❌ Gagal mengirim notifikasi setoran otomatis:', await response.text());
+            return false;
+        }
+
+    } catch (error) {
+        console.error('❌ Error mengirim notifikasi setoran otomatis:', error);
+        return false;
+    }
+}
+
+// Kirim notifikasi setoran manual ke Discord
+async function sendDiscordSetoranManualNotification(setoran) {
+    if (!DISCORD_WEBHOOK_URL || DISCORD_WEBHOOK_URL.includes('YOUR_WEBHOOK_URL')) {
+        return;
+    }
+
+    try {
+        const embed = {
+            title: "💵 SETORAN MANUAL DIPROSES",
+            color: 0xffa500, // Orange
+            description: `Setoran manual ke distributor telah berhasil`,
+            fields: [
+                {
+                    name: "🏢 Distributor",
+                    value: setoran.distributor,
+                    inline: true
+                },
+                {
+                    name: "💰 Jumlah",
+                    value: `**${formatDollar(setoran.jumlah)}**`,
+                    inline: true
+                },
+                {
+                    name: "📅 Tanggal",
+                    value: formatDate(setoran.tanggal),
+                    inline: true
+                },
+                {
+                    name: "📝 Keterangan",
+                    value: setoran.keterangan || '-',
+                    inline: false
+                }
+            ],
+            timestamp: new Date().toISOString(),
+            footer: {
+                text: "Brangkas Distributor System • " + new Date().getFullYear(),
+                icon_url: "https://cdn-icons-png.flaticon.com/512/2331/2331966.png"
+            },
+            thumbnail: {
+                url: "https://cdn-icons-png.flaticon.com/512/3135/3135692.png"
+            }
+        };
+
+        const payload = {
+            embeds: [embed],
+            username: "Brangkas Distributor Bot",
+            avatar_url: "https://cdn-icons-png.flaticon.com/512/2331/2331966.png",
+            content: "💵 **SETORAN MANUAL BERHASIL!**"
+        };
+
+        const response = await fetch(DISCORD_WEBHOOK_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+            console.log('✅ Notifikasi setoran manual berhasil dikirim');
+            return true;
+        } else {
+            console.error('❌ Gagal mengirim notifikasi setoran manual:', await response.text());
+            return false;
+        }
+
+    } catch (error) {
+        console.error('❌ Error mengirim notifikasi setoran manual:', error);
+        return false;
+    }
+}
 
         // ===============================
         // UTILITY FUNCTIONS
@@ -8100,6 +9559,24 @@ function getMentionsForOrder(pesanan) {
     return [...new Set(mentions)].join(' ');
 }
 
+// Fungsi baru untuk memisahkan pesanan berdasarkan PENERIMA PEMBAYARAN
+function pisahkanPesananBerdasarkanPenerima(pesananLunas) {
+    const pesananVyan = [];
+    const pesananRuuna = [];
+    
+    pesananLunas.forEach(pesanan => {
+        // Kelompokkan berdasarkan penerima pembayaran
+        if (pesanan.penerima_pembayaran === 'Vyan') {
+            pesananVyan.push(pesanan);
+        } else if (pesanan.penerima_pembayaran === 'Ruuna') {
+            pesananRuuna.push(pesanan);
+        }
+        // Jika tidak ada penerima atau penerima lain, tidak dimasukkan ke bendahara
+    });
+    
+    return { pesananVyan, pesananRuuna };
+}
+
 // Fungsi untuk mengirim notifikasi pesanan baru ke Discord dengan mention
 async function sendDiscordNotification(pesanan) {
     // Validasi webhook URL
@@ -8340,6 +9817,252 @@ async function sendDiscordPaymentNotification(pesanan, jumlahBayar, penerima) {
         console.error('❌ Error mengirim notifikasi pembayaran Discord:', error);
         return false;
     }
+}
+
+// Fungsi untuk menampilkan detail uang yang belum dikasih
+function showDetailUangBelumDikasih(penerima) {
+    // Filter pesanan yang sudah lunas
+    const pesananLunas = pesananData.filter(p => 
+        p.status_pembayaran === 'lunas' || p.uang_dibayar >= p.total
+    );
+    
+    // Pisahkan pesanan berdasarkan kategori
+    const { pesananVyan, pesananRuuna } = pisahkanPesananBerdasarkanKategori(pesananLunas);
+    
+    // Pilih data berdasarkan penerima
+    const dataPesanan = penerima === 'vyan' ? pesananVyan : pesananRuuna;
+    
+    // Filter pesanan yang belum dikasih ke bendahara
+    const uangBelumDikasih = dataPesanan.filter(p => !p.uang_diberikan_ke_bendahara);
+    
+    if (uangBelumDikasih.length === 0) {
+        showNotification(`Tidak ada uang yang belum dikasih ke ${penerima === 'vyan' ? 'Vyan' : 'Ruuna'}!`, 'info');
+        return;
+    }
+    
+    // Hitung total uang yang belum dikasih
+    const totalBelumDikasih = uangBelumDikasih.reduce((sum, p) => sum + p.total, 0);
+    
+    // Buat HTML untuk modal detail
+    let detailHtml = `
+        <div class="detail-pesanan-container">
+            <div class="detail-pesanan-header">
+                <div class="detail-pesanan-title">Detail Uang Belum Dikasih</div>
+                <span class="badge badge-warning badge-sm">
+                    ${penerima === 'vyan' ? 'VYAN' : 'RUUNA'}
+                </span>
+            </div>
+
+            <!-- Ringkasan -->
+            <div class="info-section">
+                <div class="info-row">
+                    <span class="info-label">Penerima:</span>
+                    <span class="info-value">${penerima === 'vyan' ? 'Vyan (Non-Narcotics)' : 'Ruuna (Narcotics)'}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Total Uang Belum Dikasih:</span>
+                    <span class="info-value" style="color: var(--warning); font-weight: 700;">${formatDollar(totalBelumDikasih)}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Jumlah Pesanan:</span>
+                    <span class="info-value">${uangBelumDikasih.length} pesanan</span>
+                </div>
+            </div>
+
+            <!-- Daftar Pesanan -->
+            <div style="margin-top: 1.5rem;">
+                <h4 style="margin-bottom: 1rem; color: var(--text-primary);">Daftar Pesanan</h4>
+                <div style="max-height: 400px; overflow-y: auto;">
+    `;
+    
+    // Tambahkan setiap pesanan ke dalam list
+    uangBelumDikasih.forEach((pesanan, index) => {
+        const kategoriItems = getKategoriItems(pesanan.items);
+        
+        detailHtml += `
+            <div class="hutang-item" style="margin-bottom: 0.8rem;">
+                <div style="flex: 1;">
+                    <div class="hutang-customer">${pesanan.customer}</div>
+                    <div class="hutang-status">
+                        <strong>${pesanan.id}</strong> • ${formatDate(pesanan.tanggal)}
+                    </div>
+                    <div style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.3rem;">
+                        ${pesanan.items.length} item • ${kategoriItems}
+                    </div>
+                </div>
+                <div style="text-align: right;">
+                    <div class="hutang-amount">${formatDollar(pesanan.total)}</div>
+                    <div style="margin-top: 0.5rem;">
+                        <button class="btn btn-success btn-sm" onclick="markUangDiberikanKeBendahara('${pesanan.id}')">
+                            <i class="fas fa-check"></i> Tandai Dikasih
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+    
+    detailHtml += `
+                </div>
+            </div>
+
+            <!-- Tombol Aksi -->
+            <div class="compact-actions" style="margin-top: 1.5rem;">
+                <button class="btn btn-primary btn-compact" onclick="copyDetailUangBelumDikasih('${penerima}')">
+                    <i class="fas fa-copy"></i> Salin Ringkasan
+                </button>
+                <button class="btn btn-info btn-compact" onclick="exportDetailUangBelumDikasih('${penerima}')">
+                    <i class="fas fa-download"></i> Export
+                </button>
+                <button class="btn btn-secondary btn-compact" onclick="closeModal('detail-pesanan-modal')">
+                    <i class="fas fa-times"></i> Tutup
+                </button>
+            </div>
+        </div>
+    `;
+    
+    // Tampilkan modal
+    document.getElementById('detail-pesanan-content').innerHTML = detailHtml;
+    showModal('detail-pesanan-modal');
+}
+
+// Fungsi untuk mendapatkan kategori items dari pesanan
+function getKategoriItems(items) {
+    const kategoriSet = new Set();
+    
+    items.forEach(item => {
+        const barang = barangData.find(b => b.id === item.id);
+        if (barang && barang.kategori) {
+            kategoriSet.add(barang.kategori);
+        }
+    });
+    
+    return Array.from(kategoriSet).join(', ');
+}
+
+// Fungsi untuk menyalin ringkasan uang belum dikasih
+function copyDetailUangBelumDikasih(penerima) {
+    const pesananLunas = pesananData.filter(p => 
+        p.status_pembayaran === 'lunas' || p.uang_dibayar >= p.total
+    );
+    
+    const { pesananVyan, pesananRuuna } = pisahkanPesananBerdasarkanKategori(pesananLunas);
+    const dataPesanan = penerima === 'vyan' ? pesananVyan : pesananRuuna;
+    const uangBelumDikasih = dataPesanan.filter(p => !p.uang_diberikan_ke_bendahara);
+    
+    const totalBelumDikasih = uangBelumDikasih.reduce((sum, p) => sum + p.total, 0);
+    
+    let summaryText = `DETAIL UANG BELUM DIKASIH - ${penerima === 'vyan' ? 'VYAN' : 'RUUNA'}\n\n`;
+    summaryText += `Periode: ${new Date().toLocaleDateString('id-ID')}\n`;
+    summaryText += `Total Uang Belum Dikasih: ${formatDollar(totalBelumDikasih)}\n`;
+    summaryText += `Jumlah Pesanan: ${uangBelumDikasih.length}\n\n`;
+    summaryText += `DETAIL PESANAN:\n`;
+    summaryText += `================\n\n`;
+    
+    uangBelumDikasih.forEach((pesanan, index) => {
+        const kategoriItems = getKategoriItems(pesanan.items);
+        
+        summaryText += `${index + 1}. ${pesanan.id}\n`;
+        summaryText += `   Customer: ${pesanan.customer}\n`;
+        summaryText += `   Tanggal: ${formatDate(pesanan.tanggal)}\n`;
+        summaryText += `   Total: ${formatDollar(pesanan.total)}\n`;
+        summaryText += `   Items: ${pesanan.items.length} item (${kategoriItems})\n\n`;
+    });
+    
+    // Salin ke clipboard
+    navigator.clipboard.writeText(summaryText)
+        .then(() => {
+            showNotification('Ringkasan berhasil disalin ke clipboard!', 'success');
+        })
+        .catch(err => {
+            console.error('Gagal menyalin teks: ', err);
+            fallbackCopyTextToClipboard(summaryText);
+        });
+}
+
+// Fungsi untuk export detail uang belum dikasih
+function exportDetailUangBelumDikasih(penerima) {
+    const pesananLunas = pesananData.filter(p => 
+        p.status_pembayaran === 'lunas' || p.uang_dibayar >= p.total
+    );
+    
+    const { pesananVyan, pesananRuuna } = pisahkanPesananBerdasarkanKategori(pesananLunas);
+    const dataPesanan = penerima === 'vyan' ? pesananVyan : pesananRuuna;
+    const uangBelumDikasih = dataPesanan.filter(p => !p.uang_diberikan_ke_bendahara);
+    
+    // Buat data untuk CSV
+    let csvContent = "ID Pesanan,Customer,Tanggal,Total,Jumlah Items,Kategori\n";
+    
+    uangBelumDikasih.forEach(pesanan => {
+        const kategoriItems = getKategoriItems(pesanan.items);
+        const row = [
+            pesanan.id,
+            `"${pesanan.customer}"`,
+            formatDate(pesanan.tanggal),
+            pesanan.total,
+            pesanan.items.length,
+            `"${kategoriItems}"`
+        ].join(',');
+        
+        csvContent += row + '\n';
+    });
+    
+    // Buat dan download file CSV
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    
+    link.setAttribute("href", url);
+    link.setAttribute("download", `uang_belum_dikasih_${penerima}_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    showNotification(`Data berhasil diexport untuk ${penerima === 'vyan' ? 'Vyan' : 'Ruuna'}!`, 'success');
+}
+
+// Update fungsi updateDashboardBendaharaPerPenerima untuk menambahkan tombol secara dinamis
+function updateDashboardBendaharaPerPenerima(pesanan, penerima) {
+    // Hitung statistik
+    const uangSudahDikasih = pesanan.filter(p => p.uang_diberikan_ke_bendahara);
+    const uangBelumDikasih = pesanan.filter(p => !p.uang_diberikan_ke_bendahara);
+    
+    const totalUangDikasih = uangSudahDikasih.reduce((sum, p) => sum + p.total, 0);
+    const totalUangBelumDikasih = uangBelumDikasih.reduce((sum, p) => sum + p.total, 0);
+    
+    const rataRataDikasih = uangSudahDikasih.length > 0 ? totalUangDikasih / uangSudahDikasih.length : 0;
+    
+    // Update stats cards
+    document.getElementById(`${penerima}-total-uang-dikasih`).textContent = formatDollar(totalUangDikasih);
+    document.getElementById(`${penerima}-total-pesanan-dikasih`).textContent = uangSudahDikasih.length;
+    document.getElementById(`${penerima}-total-pesanan-belum`).textContent = uangBelumDikasih.length;
+    document.getElementById(`${penerima}-rata-rata-dikasih`).textContent = formatDollar(rataRataDikasih);
+    
+    // Update summary dengan tombol detail
+    document.getElementById(`${penerima}-summary-sudah-dikasih`).textContent = formatDollar(totalUangDikasih);
+    
+    const belumDikasihElement = document.getElementById(`${penerima}-summary-belum-dikasih`);
+    if (belumDikasihElement) {
+        belumDikasihElement.textContent = formatDollar(totalUangBelumDikasih);
+        
+        // Tambahkan tombol detail jika belum ada
+        const parentElement = belumDikasihElement.parentElement;
+        if (!parentElement.querySelector('.btn-info')) {
+            const detailButton = document.createElement('button');
+            detailButton.className = 'btn btn-info btn-sm';
+            detailButton.innerHTML = '<i class="fas fa-eye"></i> Detail';
+            detailButton.style.marginLeft = '10px';
+            detailButton.style.padding = '0.3rem 0.6rem';
+            detailButton.onclick = () => showDetailUangBelumDikasih(penerima);
+            
+            parentElement.appendChild(detailButton);
+        }
+    }
+    
+    // Update recent uang dikasih
+    updateRecentUangDikasihPerPenerima(uangSudahDikasih, penerima);
 }
 
 
@@ -9018,6 +10741,8 @@ function updatePesananHutangTable(pesananList = null) {
     `}).join('');
 }
 
+
+
         // ===============================
         // INITIALIZATION - DENGAN PROFIT SYSTEM
         // ===============================
@@ -9244,6 +10969,97 @@ function updatePesananHutangTable(pesananList = null) {
                     <i class="fas fa-arrow-left"></i> Kembali ke Login Admin
                 </button>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Setor Manual -->
+<div class="modal" id="setor-manual-modal">
+    <div class="modal-content" style="max-width: 500px;">
+        <div class="modal-header">
+            <div class="modal-title">Setor Uang ke Distributor</div>
+            <button class="close-modal" onclick="closeModal('setor-manual-modal')">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="distributor-setor">Pilih Distributor</label>
+                <select id="distributor-setor" class="form-control" required>
+                    <option value="">Pilih Distributor</option>
+                    <option value="Distributor A">Distributor A</option>
+                    <option value="Distributor B">Distributor B</option>
+                    <option value="Distributor C">Distributor C</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="jumlah-setor">Jumlah Setoran ($)</label>
+                <input type="number" id="jumlah-setor" class="form-control" placeholder="Masukkan jumlah setoran" required>
+            </div>
+            <div class="form-group">
+                <label for="keterangan-setor">Keterangan Setoran</label>
+                <textarea id="keterangan-setor" class="form-control" placeholder="Tambahkan keterangan setoran" rows="3"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="tanggal-setor">Tanggal Setoran</label>
+                <input type="datetime-local" id="tanggal-setor" class="form-control" required>
+            </div>
+        </div>
+        <div class="modal-footer" style="padding: 1.5rem; border-top: 1px solid var(--dark-surface-light); display: flex; justify-content: flex-end; gap: 1rem;">
+            <button class="btn btn-secondary" onclick="closeModal('setor-manual-modal')">
+                <i class="fas fa-times"></i> Batal
+            </button>
+            <button class="btn btn-success" onclick="prosesSetorManual()">
+                <i class="fas fa-paper-plane"></i> Proses Setoran
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Jadwal Otomatis -->
+<div class="modal" id="jadwal-otomatis-modal">
+    <div class="modal-content" style="max-width: 500px;">
+        <div class="modal-header">
+            <div class="modal-title">Atur Jadwal Setoran Otomatis</div>
+            <button class="close-modal" onclick="closeModal('jadwal-otomatis-modal')">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="hari-setor">Hari Setoran</label>
+                <select id="hari-setor" class="form-control" required>
+                    <option value="1">Senin</option>
+                    <option value="2">Selasa</option>
+                    <option value="3" selected>Rabu</option>
+                    <option value="4">Kamis</option>
+                    <option value="5">Jumat</option>
+                    <option value="6">Sabtu</option>
+                    <option value="0">Minggu</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="waktu-setor">Waktu Setoran</label>
+                <input type="time" id="waktu-setor" class="form-control" value="00:00" required>
+            </div>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="aktifkan-otomatis" checked> 
+                    Aktifkan Setoran Otomatis
+                </label>
+            </div>
+            <div class="info-section">
+                <h4>Informasi Jadwal</h4>
+                <p>Sistem akan secara otomatis menghitung total uang yang harus disetor ke distributor setiap minggu pada hari dan waktu yang ditentukan.</p>
+            </div>
+        </div>
+        <div class="modal-footer" style="padding: 1.5rem; border-top: 1px solid var(--dark-surface-light); display: flex; justify-content: flex-end; gap: 1rem;">
+            <button class="btn btn-secondary" onclick="closeModal('jadwal-otomatis-modal')">
+                <i class="fas fa-times"></i> Batal
+            </button>
+            <button class="btn btn-success" onclick="simpanJadwalOtomatis()">
+                <i class="fas fa-save"></i> Simpan Jadwal
+            </button>
         </div>
     </div>
 </div>
