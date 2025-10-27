@@ -985,6 +985,65 @@ body, .card, .sidebar, .modal-content, .form-control, .btn {
             border: 1px solid rgba(16, 185, 129, 0.3);
         }
 
+        /* Tambahkan di bagian CSS */
+.popup-item-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin-top: 0.3rem;
+}
+
+.popup-quantity-btn {
+    background: var(--dark-surface-light);
+    border: none;
+    color: var(--text-primary);
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    transition: var(--transition-fast);
+}
+
+.popup-quantity-btn:hover {
+    background: var(--primary);
+    color: white;
+}
+
+.popup-quantity-input {
+    width: 30px;
+    text-align: center;
+    background: var(--dark-bg);
+    border: 1px solid var(--dark-surface-lighter);
+    color: var(--text-primary);
+    padding: 0.2rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+}
+
+.popup-remove-btn {
+    background: var(--danger);
+    border: none;
+    color: white;
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    transition: var(--transition-fast);
+    margin-left: 0.3rem;
+}
+
+.popup-remove-btn:hover {
+    background: var(--danger-dark);
+}
+
         .status-belum-dikasih {
             background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(217, 119, 6, 0.2) 100%);
             color: var(--warning);
@@ -1350,6 +1409,14 @@ body, .card, .sidebar, .modal-content, .form-control, .btn {
     box-shadow: var(--shadow);
     border: 1px solid rgba(255, 255, 255, 0.05);
 }
+.btn-popup-danger {
+    background: linear-gradient(135deg, var(--danger) 0%, var(--danger-dark) 100%);
+    color: white;
+}
+
+.btn-popup-danger:hover {
+    background: linear-gradient(135deg, #f87171 0%, var(--danger) 100%);
+}
 
 .search-pesanan-box input {
     background: transparent;
@@ -1577,6 +1644,236 @@ body, .card, .sidebar, .modal-content, .form-control, .btn {
             padding: 1rem;
             backdrop-filter: blur(5px);
         }
+
+            /* Popup Checkout Styles */
+    .checkout-popup {
+        position: fixed;
+        bottom: 80px;
+        right: 24px;
+        background: var(--dark-surface);
+        border-radius: var(--border-radius-lg);
+        padding: 1.5rem;
+        box-shadow: var(--shadow-xl);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        z-index: 999;
+        width: 320px;
+        transform: translateY(20px);
+        opacity: 0;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        pointer-events: none;
+    }
+
+    .checkout-popup.show {
+        transform: translateY(0);
+        opacity: 1;
+        pointer-events: all;
+    }
+
+    .checkout-popup-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid var(--dark-surface-light);
+    }
+
+    .checkout-popup-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--text-primary);
+    }
+
+    .close-popup {
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: 6px;
+        transition: var(--transition-fast);
+    }
+
+    .close-popup:hover {
+        background: var(--dark-surface-light);
+        color: var(--text-primary);
+    }
+
+    .checkout-popup-items {
+        max-height: 200px;
+        overflow-y: auto;
+        margin-bottom: 1rem;
+    }
+
+    .popup-cart-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid var(--dark-surface-light);
+    }
+
+    .popup-cart-item:last-child {
+        border-bottom: none;
+    }
+
+    .popup-item-info {
+        flex: 1;
+    }
+
+    .popup-item-name {
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: var(--text-primary);
+    }
+
+    .popup-item-details {
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+    }
+
+    .popup-item-total {
+        font-weight: 700;
+        color: var(--success);
+        font-size: 0.9rem;
+    }
+
+    .checkout-popup-summary {
+        background: var(--dark-surface-light);
+        padding: 1rem;
+        border-radius: var(--border-radius);
+        margin-bottom: 1rem;
+    }
+
+    .popup-summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .popup-summary-total {
+        font-weight: 700;
+        font-size: 1.1rem;
+        border-top: 1px solid var(--dark-surface-lighter);
+        padding-top: 0.5rem;
+        margin-top: 0.5rem;
+    }
+
+    .checkout-popup-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .btn-popup {
+        flex: 1;
+        padding: 0.7rem 1rem;
+        border-radius: var(--border-radius);
+        border: none;
+        cursor: pointer;
+        font-weight: 600;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .btn-popup-primary {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        color: white;
+    }
+
+    .btn-popup-primary:hover {
+        background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+        transform: translateY(-2px);
+    }
+
+    .btn-popup-secondary {
+        background: var(--dark-surface-light);
+        color: var(--text-primary);
+        border: 1px solid var(--dark-surface-lighter);
+    }
+
+    .btn-popup-secondary:hover {
+        background: var(--dark-surface-lighter);
+        transform: translateY(-2px);
+    }
+
+    .empty-popup-cart {
+        text-align: center;
+        padding: 1.5rem;
+        color: var(--text-muted);
+    }
+
+    .empty-popup-cart i {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+        opacity: 0.5;
+    }
+
+    /* Floating Checkout Button */
+    .floating-checkout-btn {
+        position: fixed;
+        bottom: 80px;
+        right: 24px;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--success) 0%, var(--success-dark) 100%);
+        color: white;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+        box-shadow: var(--shadow-xl);
+        z-index: 998;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        backdrop-filter: blur(10px);
+        border: 2px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .floating-checkout-btn:hover {
+        transform: scale(1.1) translateY(-5px);
+        box-shadow: var(--shadow-2xl);
+    }
+
+    .floating-checkout-btn .cart-badge {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background: linear-gradient(135deg, var(--danger) 0%, var(--danger-dark) 100%);
+        color: white;
+        border-radius: 50%;
+        min-width: 24px;
+        height: 24px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid var(--dark-surface);
+    }
+
+    /* Animation for cart items */
+    @keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .popup-cart-item {
+        animation: slideInUp 0.3s ease-out;
+    }
 
         /* Payment Badge Styles */
         .payment-badge {
@@ -3885,6 +4182,48 @@ body, .card, .sidebar, .modal-content, .form-control, .btn {
             </form>
         </div>
     </div>
+
+    <button class="floating-checkout-btn" id="floating-checkout-btn" style="display: none;">
+    <i class="fas fa-shopping-cart"></i>
+    <span class="cart-badge" id="floating-cart-badge">0</span>
+</button>
+
+<!-- Checkout Popup -->
+<div class="checkout-popup" id="checkout-popup">
+    <div class="checkout-popup-header">
+        <div class="checkout-popup-title">Keranjang Belanja</div>
+        <button class="close-popup" onclick="hideCheckoutPopup()">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
+    <div class="checkout-popup-items" id="checkout-popup-items">
+        <!-- Items akan diisi oleh JavaScript -->
+    </div>
+
+    <div class="checkout-popup-summary">
+        <div class="popup-summary-row">
+            <span>Subtotal:</span>
+            <span id="popup-subtotal">$ 0</span>
+        </div>
+        <div class="popup-summary-row">
+            <span>Total Items:</span>
+            <span id="popup-total-items">0</span>
+        </div>
+        <div class="popup-summary-row popup-summary-total">
+            <span>Total:</span>
+            <span id="popup-total">$ 0</span>
+        </div>
+    </div>
+<div class="checkout-popup-actions">
+    <button class="btn-popup btn-popup-danger" onclick="kosongkanKeranjang()">
+        <i class="fas fa-trash"></i>Kosongkan
+    </button>
+    <button class="btn-popup btn-popup-primary" onclick="goToCheckoutPage()">
+        <i class="fas fa-cash-register"></i> Checkout
+    </button>
+</div>
+</div>
     
 
     <!-- Firebase Configuration -->
@@ -3942,6 +4281,174 @@ body, .card, .sidebar, .modal-content, .form-control, .btn {
             // Fallback dan default
             'default': 'images/default.jpg'
         };
+
+        // ===============================
+    // CHECKOUT POPUP SYSTEM
+    // ===============================
+
+    let checkoutPopupVisible = false;
+
+    // Fungsi untuk menampilkan popup checkout
+    function showCheckoutPopup() {
+        if (cart.length === 0) {
+            showNotification('Keranjang masih kosong!', 'error');
+            return;
+        }
+
+        updateCheckoutPopup();
+        document.getElementById('checkout-popup').classList.add('show');
+        checkoutPopupVisible = true;
+    }
+
+    // Fungsi untuk menyembunyikan popup checkout
+    function hideCheckoutPopup() {
+        document.getElementById('checkout-popup').classList.remove('show');
+        checkoutPopupVisible = false;
+    }
+
+    // Update fungsi updateCheckoutPopup untuk menambahkan kontrol quantity
+function updateCheckoutPopup() {
+    const popupItemsContainer = document.getElementById('checkout-popup-items');
+    const popupSubtotalElement = document.getElementById('popup-subtotal');
+    const popupTotalItemsElement = document.getElementById('popup-total-items');
+    const popupTotalElement = document.getElementById('popup-total');
+
+    if (cart.length === 0) {
+        popupItemsContainer.innerHTML = `
+            <div class="empty-popup-cart">
+                <i class="fas fa-shopping-cart"></i>
+                <p>Keranjang kosong</p>
+            </div>
+        `;
+        popupSubtotalElement.textContent = '$ 0';
+        popupTotalItemsElement.textContent = '0';
+        popupTotalElement.textContent = '$ 0';
+        return;
+    }
+
+    // Hitung totals
+    const subtotal = cart.reduce((sum, item) => sum + (item.harga * item.quantity), 0);
+    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+
+    // Update summary
+    popupSubtotalElement.textContent = formatDollar(subtotal);
+    popupTotalItemsElement.textContent = totalItems;
+    popupTotalElement.textContent = formatDollar(subtotal);
+
+    // Update items list dengan kontrol quantity
+        popupItemsContainer.innerHTML = '';
+    cart.forEach((item, index) => {
+        const itemTotal = item.harga * item.quantity;
+        const itemElement = document.createElement('div');
+        itemElement.className = 'popup-cart-item';
+        itemElement.style.animationDelay = `${index * 0.1}s`;
+        itemElement.innerHTML = `
+            <div class="popup-item-info">
+                <div class="popup-item-name">${item.nama}</div>
+                <div class="popup-item-details">
+                    ${formatDollar(item.harga)} x ${item.quantity}
+                    <span class="status-badge-barang ${item.status === 'ready' ? 'status-ready' : 'status-preorder'} badge-sm">
+                        ${item.status === 'ready' ? 'READY' : 'PRE-ORDER'}
+                    </span>
+                </div>
+                <div class="popup-item-controls">
+                    <button class="popup-quantity-btn" onclick="event.stopPropagation(); updatePopupQuantity('${item.id}', ${item.quantity - 1})">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                    <input type="number" class="popup-quantity-input" value="${item.quantity}" 
+                        onchange="updatePopupQuantity('${item.id}', parseInt(this.value))" min="1">
+                    <button class="popup-quantity-btn" onclick="event.stopPropagation(); updatePopupQuantity('${item.id}', ${item.quantity + 1})">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                    <button class="popup-remove-btn" onclick="event.stopPropagation(); removeFromCart('${item.id}')">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="popup-item-total">${formatDollar(itemTotal)}</div>
+        `;
+        popupItemsContainer.appendChild(itemElement);
+    });
+}
+
+// Fungsi untuk update quantity dari popup
+function updatePopupQuantity(barangId, newQuantity) {
+    // Stop event propagation untuk mencegah closing popup
+    event.stopPropagation();
+    
+    const item = cart.find(item => item.id === barangId);
+    if (!item) return;
+
+    // Validasi stok untuk barang ready
+    if (item.status === 'ready') {
+        const barang = barangData.find(b => b.id === barangId);
+        if (barang && newQuantity > barang.stok) {
+            showNotification(`Stok ${barang.nama} tidak mencukupi! Stok tersedia: ${barang.stok}`, 'error');
+            return;
+        }
+    }
+
+    // Validasi minimum quantity
+    if (newQuantity < 1) {
+        removeFromCart(barangId);
+        return;
+    }
+
+    // Update quantity
+    item.quantity = newQuantity;
+    saveCartToStorage();
+    updateCartUI();
+    
+    // Update popup jika sedang terbuka
+    if (checkoutPopupVisible) {
+        updateCheckoutPopup();
+    }
+    
+    showNotification(`Jumlah ${item.nama} diupdate: ${newQuantity}`, 'success');
+}
+
+    // Fungsi untuk pergi ke halaman checkout
+    function goToCheckoutPage() {
+        hideCheckoutPopup();
+        showPage('checkout');
+    }
+
+    // Fungsi untuk update floating button
+    function updateFloatingCheckoutButton() {
+        const floatingButton = document.getElementById('floating-checkout-btn');
+        const floatingBadge = document.getElementById('floating-cart-badge');
+        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+
+        if (totalItems > 0) {
+            floatingButton.style.display = 'flex';
+            floatingBadge.textContent = totalItems;
+        } else {
+            floatingButton.style.display = 'none';
+        }
+    }
+
+// Event listener untuk floating button
+document.getElementById('floating-checkout-btn').addEventListener('click', function(e) {
+    e.stopPropagation();
+    showCheckoutPopup();
+});
+
+// Perbaiki event listener untuk close popup
+document.addEventListener('click', function(e) {
+    const popup = document.getElementById('checkout-popup');
+    const floatingButton = document.getElementById('floating-checkout-btn');
+    
+    if (checkoutPopupVisible && 
+        !popup.contains(e.target) && 
+        !floatingButton.contains(e.target)) {
+        hideCheckoutPopup();
+    }
+});
+
+// Tambahkan event listener untuk mencegah closing ketika klik di dalam popup
+document.getElementById('checkout-popup').addEventListener('click', function(e) {
+    e.stopPropagation();
+});
 
         // Fungsi untuk mendapatkan path gambar berdasarkan nama barang
         function getGambarBarang(namaBarang) {
@@ -4660,7 +5167,19 @@ function initializeApp() {
             closeModal('pembeli-password-modal');
             showLogin(); // Ini akan menampilkan layar login admin
         }
-
+// Remove item from cart
+function removeFromCart(barangId) {
+    cart = cart.filter(item => item.id !== barangId);
+    saveCartToStorage();
+    updateCartUI();
+    
+    // Update popup jika sedang terbuka
+    if (checkoutPopupVisible) {
+        updateCheckoutPopup();
+    }
+    
+    showNotification('Item dihapus dari keranjang', 'info');
+}
         // ===============================
         // FIXED CHECKOUT BUTTON HANDLER
         // ===============================
@@ -5100,44 +5619,53 @@ function deleteLaporanByPeriod() {
             localStorage.setItem('brangkas_cart', JSON.stringify(cart));
         }
 
-        // Add item to cart dengan real-time update
-        function addToCart(barangId, jumlah = 1) {
-            const barang = barangData.find(b => b.id === barangId);
-            if (!barang) {
-                showNotification('Barang tidak ditemukan!', 'error');
-                return;
-            }
+      function addToCart(barangId, jumlah = 1) {
+    const barang = barangData.find(b => b.id === barangId);
+    if (!barang) {
+        showNotification('Barang tidak ditemukan!', 'error');
+        return;
+    }
 
-            // Check stok untuk barang ready
-            if (barang.status === 'ready' && barang.stok < jumlah) {
-                showNotification(`Stok ${barang.nama} tidak mencukupi! Stok tersedia: ${barang.stok}`, 'error');
-                return;
-            }
+    // Check stok untuk barang ready
+    if (barang.status === 'ready' && barang.stok < jumlah) {
+        showNotification(`Stok ${barang.nama} tidak mencukupi! Stok tersedia: ${barang.stok}`, 'error');
+        return;
+    }
 
-            // Check if item already in cart
-            const existingItem = cart.find(item => item.id === barangId);
-            if (existingItem) {
-                // Update quantity
-                existingItem.quantity += jumlah;
-                if (barang.status === 'ready' && existingItem.quantity > barang.stok) {
-                    existingItem.quantity = barang.stok;
-                    showNotification(`Jumlah ${barang.nama} disesuaikan dengan stok tersedia: ${barang.stok}`, 'warning');
-                }
-            } else {
-                // Add new item
-                cart.push({
-                    id: barangId,
-                    nama: barang.nama,
-                    harga: barang.harga,
-                    quantity: jumlah,
-                    status: barang.status // Tambahkan status barang ke cart
-                });
-            }
-
-            saveCartToStorage();
-            updateCartUI();
-            showNotification(`${barang.nama} ditambahkan ke keranjang`, 'success');
+    // Check if item already in cart
+    const existingItem = cart.find(item => item.id === barangId);
+    if (existingItem) {
+        // Update quantity
+        existingItem.quantity += jumlah;
+        if (barang.status === 'ready' && existingItem.quantity > barang.stok) {
+            existingItem.quantity = barang.stok;
+            showNotification(`Jumlah ${barang.nama} disesuaikan dengan stok tersedia: ${barang.stok}`, 'warning');
         }
+    } else {
+        // Add new item
+        cart.push({
+            id: barangId,
+            nama: barang.nama,
+            harga: barang.harga,
+            quantity: jumlah,
+            status: barang.status
+        });
+    }
+
+    saveCartToStorage();
+    updateCartUI();
+
+    // Tampilkan popup otomatis ketika menambah item
+    setTimeout(() => {
+        showCheckoutPopup();
+    }, 300);
+
+    showNotification(`${barang.nama} ditambahkan ke keranjang`, 'success');
+}
+    // Inisialisasi floating button saat load
+    document.addEventListener('DOMContentLoaded', function() {
+        updateFloatingCheckoutButton();
+    });
 
         // Remove item from cart
         function removeFromCart(barangId) {
@@ -5182,23 +5710,31 @@ function deleteLaporanByPeriod() {
             }
         }
 
-        // Update cart UI
-        function updateCartUI() {
-            // Update cart count badge
-            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-            document.getElementById('cart-count').textContent = totalItems;
-            document.getElementById('cart-count-badge').textContent = totalItems;
-            
-            // Show/hide cart badge
-            const cartBadge = document.getElementById('cart-count-badge');
-            cartBadge.style.display = totalItems > 0 ? 'block' : 'none';
-            
-            // Show/hide checkout button
-            document.getElementById('checkout-btn').style.display = totalItems > 0 ? 'inline-flex' : 'none';
-            
-            // Update cart items in checkout page
-            updateCheckoutPage();
+         // Update fungsi updateCartUI untuk include floating button
+    function updateCartUI() {
+        // Update cart count badge (existing)
+        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+        document.getElementById('cart-count').textContent = totalItems;
+        document.getElementById('cart-count-badge').textContent = totalItems;
+        
+        // Show/hide cart badge
+        const cartBadge = document.getElementById('cart-count-badge');
+        cartBadge.style.display = totalItems > 0 ? 'block' : 'none';
+        
+        // Show/hide checkout button
+        document.getElementById('checkout-btn').style.display = totalItems > 0 ? 'inline-flex' : 'none';
+        
+        // Update floating button
+        updateFloatingCheckoutButton();
+        
+        // Update cart items in checkout page
+        updateCheckoutPage();
+        
+        // Update popup jika sedang terbuka
+        if (checkoutPopupVisible) {
+            updateCheckoutPopup();
         }
+    }
 
         // Update checkout page
         function updateCheckoutPage() {
