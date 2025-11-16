@@ -71,6 +71,81 @@
             background: var(--primary-light);
         }
 
+        /* Styling untuk filter kategori di halaman pemesanan */
+.search-filter-pesanan {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+    padding: 0 1.5rem;
+}
+
+.search-pesanan-box {
+    display: flex;
+    align-items: center;
+    background: var(--dark-surface);
+    border-radius: var(--border-radius);
+    padding: 0.8rem 1.2rem;
+    flex: 1;
+    max-width: 400px;
+    box-shadow: var(--shadow);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.filter-options {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+/* Badge untuk filter kategori */
+.category-filter-badge {
+    background: linear-gradient(135deg, var(--info) 0%, var(--info-dark) 100%);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius);
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.btn-close-category {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 0.2rem;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-fast);
+}
+
+.btn-close-category:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .search-filter-pesanan {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .search-pesanan-box {
+        max-width: none;
+    }
+    
+    .filter-options {
+        justify-content: space-between;
+    }
+}
+
         /* Light Theme Variables */
         :root[data-theme="light"] {
             --primary: #6366f1;
@@ -1985,6 +2060,26 @@ body, .card, .sidebar, .modal-content, .form-control, .btn {
             border: 1px solid var(--dark-surface-lighter);
         }
 
+        /* Style untuk group tombol copy pending */
+        .btn-group-copy {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        /* Responsive design untuk tombol */
+        @media (max-width: 768px) {
+            .btn-group-copy {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .btn-group-copy button {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
         .confirmation-btn.confirm {
             background: linear-gradient(135deg, var(--success) 0%, var(--success-dark) 100%);
             color: white;
@@ -3239,9 +3334,14 @@ body, .card, .sidebar, .modal-content, .form-control, .btn {
                 <div class="header">
                     <h1>Pemesanan</h1>
                     <div class="user-info">
-                        <button class="btn btn-info" id="copy-all-pending-btn">
-                            <i class="fas fa-copy"></i> Copy Semua Pending
-                        </button>
+                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                            <button class="btn btn-info" id="copy-all-pending-btn">
+                                <i class="fas fa-copy"></i> Copy Semua Pending
+                            </button>
+                            <button class="btn btn-warning" id="copy-filtered-pending-btn">
+                                <i class="fas fa-filter"></i> Copy dengan Filter
+                            </button>
+                        </div>
                         <button class="btn btn-primary" id="buat-pesanan-btn">
                             <i class="fas fa-plus"></i> Buat Pesanan
                         </button>
@@ -3251,6 +3351,33 @@ body, .card, .sidebar, .modal-content, .form-control, .btn {
                         </button>
                     </div>
                 </div>
+
+                <!-- Di bagian search-filter untuk pemesanan, tambahkan dropdown filter kategori -->
+<div class="search-filter-pesanan">
+    <div class="search-pesanan-box">
+        <i class="fas fa-search"></i>
+        <input type="text" id="search-pesanan" placeholder="Cari pesanan berdasarkan nama customer...">
+    </div>
+    
+    <div class="filter-options">
+        <!-- Filter Kategori Baru -->
+        <select id="filter-kategori-pesanan" class="form-control">
+            <option value="">Semua Kategori</option>
+            <option value="Class 1">Class 1</option>
+            <option value="Class 2">Class 2</option>
+            <option value="Class 3">Class 3</option>
+            <option value="Narcotics">Narcotics</option>
+            <option value="Heist-Stuff">Heist Stuff</option>
+            <option value="Ammo">Ammo</option>
+            <option value="Armor">Armor</option>
+            <option value="Attachment">Attachment</option>
+        </select>
+        
+        <button class="btn btn-secondary" onclick="clearPesananSearch()">
+            <i class="fas fa-times"></i> Clear
+        </button>
+    </div>
+</div>
 
                 <!-- Tabs -->
                 <div class="tabs">
@@ -4931,6 +5058,18 @@ function initializeApp() {
                 console.log('⚠️ Event listeners sudah di-setup sebelumnya');
                 return;
             }
+
+                // Tombol copy dengan filter
+            const copyFilteredBtn = document.getElementById('copy-filtered-pending-btn');
+            if (copyFilteredBtn) {
+                copyFilteredBtn.addEventListener('click', showDateFilterModal);
+            }
+
+            // Tambahkan event listener untuk filter kategori
+            const filterKategoriPesanan = document.getElementById('filter-kategori-pesanan');
+            if (filterKategoriPesanan) {
+                filterKategoriPesanan.addEventListener('change', filterPesananByCategory);
+            }
             
             console.log('🔄 Setting up event listeners...');
 
@@ -4942,6 +5081,8 @@ function initializeApp() {
             document.getElementById('jadwal-otomatis-btn')?.addEventListener('click', function() {
                 editJadwalOtomatis();
             });
+
+            
 
             const pembeliPasswordForm = document.getElementById('pembeli-password-form');
             if (pembeliPasswordForm) {
@@ -5162,6 +5303,8 @@ function initializeApp() {
                 }
             }
         }
+
+        
 
         // Fungsi untuk kembali ke login admin dari modal pembeli
         function backToAdminLogin() {
@@ -8717,6 +8860,256 @@ function simpanJadwalOtomatis() {
         });
 }
 
+// ===============================
+// FILTER PESANAN BERDASARKAN KATEGORI BARANG
+// ===============================
+
+let currentCategoryFilter = '';
+
+// Fungsi untuk filter pesanan berdasarkan kategori
+function filterPesananByCategory() {
+    const category = document.getElementById('filter-kategori-pesanan').value;
+    currentCategoryFilter = category;
+    
+    if (category === '') {
+        // Jika tidak ada filter, tampilkan semua
+        updatePesananUI();
+        hideCategoryFilterBadge();
+        return;
+    }
+    
+    // Filter pesanan yang mengandung barang dari kategori yang dipilih
+    const filteredPesanan = pesananData.filter(pesanan => {
+        return pesanan.items.some(item => {
+            const barang = barangData.find(b => b.id === item.id);
+            return barang && barang.kategori === category;
+        });
+    });
+    
+    // Update UI dengan hasil filter
+    updatePesananUIWithCategoryFilter(filteredPesanan, category);
+}
+
+// Fungsi untuk update UI dengan filter kategori
+function updatePesananUIWithCategoryFilter(filteredPesanan, category) {
+    // Update semua tab dengan hasil yang difilter
+    updateSemuaPesananTable(filteredPesanan);
+    updatePesananAktifTable(filteredPesanan.filter(p => !p.sudah_dikasih));
+    updatePesananLunasTable(filteredPesanan.filter(p => p.sudah_dikasih));
+    updatePesananHutangTable(filteredPesanan.filter(p => p.status === 'hutang' && !p.sudah_dikasih));
+    
+    // Tampilkan badge filter kategori
+    showCategoryFilterBadge(filteredPesanan.length, category);
+}
+
+// Update fungsi untuk menampilkan badge filter dengan info "belum dikasih"
+function showCategoryFilterBadge(resultCount, category) {
+    // Hapus badge sebelumnya jika ada
+    const existingBadge = document.querySelector('.category-filter-badge');
+    if (existingBadge) {
+        existingBadge.remove();
+    }
+    
+    const filterOptions = document.querySelector('.filter-options');
+    if (filterOptions) {
+        const badge = document.createElement('div');
+        badge.className = 'category-filter-badge';
+        badge.innerHTML = `
+            <span>${resultCount} pesanan dengan kategori ${category} (belum dikasih)</span>
+            <button class="btn-close-category" onclick="clearCategoryFilter()">
+                <i class="fas fa-times"></i>
+            </button>
+        `;
+        badge.style.cssText = `
+            background: linear-gradient(135deg, var(--warning) 0%, var(--warning-dark) 100%);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        `;
+        
+        const closeBtn = badge.querySelector('.btn-close-category');
+        closeBtn.style.cssText = `
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 0.2rem;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        `;
+        
+        closeBtn.addEventListener('mouseenter', function() {
+            this.style.background = 'rgba(255,255,255,0.2)';
+        });
+        
+        closeBtn.addEventListener('mouseleave', function() {
+            this.style.background = 'none';
+        });
+        
+        filterOptions.parentNode.insertBefore(badge, filterOptions.nextSibling);
+    }
+}
+
+// Fungsi untuk menyembunyikan badge filter kategori
+function hideCategoryFilterBadge() {
+    const existingBadge = document.querySelector('.category-filter-badge');
+    if (existingBadge) {
+        existingBadge.remove();
+    }
+}
+
+// Fungsi untuk menghapus filter kategori
+function clearCategoryFilter() {
+    document.getElementById('filter-kategori-pesanan').value = '';
+    currentCategoryFilter = '';
+    updatePesananUI();
+    hideCategoryFilterBadge();
+}
+
+// Fungsi untuk mendapatkan daftar kategori dari items pesanan
+function getCategoriesFromPesanan(pesanan) {
+    const categories = new Set();
+    
+    pesanan.items.forEach(item => {
+        const barang = barangData.find(b => b.id === item.id);
+        if (barang && barang.kategori) {
+            categories.add(barang.kategori);
+        }
+    });
+    
+    return Array.from(categories);
+}
+
+// Fungsi untuk menampilkan badge kategori di setiap pesanan
+function renderCategoryBadges(pesanan) {
+    const categories = getCategoriesFromPesanan(pesanan);
+    
+    if (categories.length === 0) {
+        return '';
+    }
+    
+    return `
+        <div style="display: flex; gap: 0.3rem; flex-wrap: wrap; margin-top: 0.3rem;">
+            ${categories.map(cat => `
+                <span class="badge badge-secondary badge-sm" style="font-size: 0.6rem;">
+                    ${cat}
+                </span>
+            `).join('')}
+        </div>
+    `;
+}
+
+// ===============================
+// COPY PESANAN BERDASARKAN KATEGORI
+// ===============================
+
+// Fungsi untuk menyalin pesanan berdasarkan kategori
+function copyPesananByCategory() {
+    const category = document.getElementById('filter-kategori-pesanan').value;
+    
+    if (!category) {
+        showNotification('Pilih kategori terlebih dahulu!', 'error');
+        return;
+    }
+    
+    // Filter pesanan yang mengandung barang dari kategori yang dipilih
+    const filteredPesanan = pesananData.filter(pesanan => {
+        return pesanan.items.some(item => {
+            const barang = barangData.find(b => b.id === item.id);
+            return barang && barang.kategori === category;
+        });
+    });
+    
+    if (filteredPesanan.length === 0) {
+        showNotification(`Tidak ada pesanan dengan kategori ${category}!`, 'info');
+        return;
+    }
+    
+    // Gabungkan semua items dari kategori yang dipilih
+    const categoryItems = [];
+    
+    filteredPesanan.forEach(pesanan => {
+        pesanan.items.forEach(item => {
+            const barang = barangData.find(b => b.id === item.id);
+            if (barang && barang.kategori === category) {
+                // Cek apakah item sudah ada
+                const existingItem = categoryItems.find(i => i.nama === item.nama);
+                
+                if (existingItem) {
+                    existingItem.quantity += item.quantity;
+                } else {
+                    categoryItems.push({
+                        nama: item.nama,
+                        quantity: item.quantity,
+                        status: item.status
+                    });
+                }
+            }
+        });
+    });
+    
+    // Format teks untuk disalin
+    let itemsText = `ITEMS KATEGORI ${category.toUpperCase()}\n`;
+    itemsText += `${filteredPesanan.length} pesanan\n\n`;
+    
+    // Kelompokkan items berdasarkan status
+    const readyItems = categoryItems.filter(item => item.status === 'ready');
+    const preorderItems = categoryItems.filter(item => item.status === 'preorder');
+    
+    // Tambahkan items READY
+    if (readyItems.length > 0) {
+        itemsText += `📦 BARANG READY:\n`;
+        readyItems.forEach((item, index) => {
+            itemsText += `${item.nama} - ${item.quantity}x\n`;
+        });
+        itemsText += `\n`;
+    }
+    
+    // Tambahkan items PRE-ORDER
+    if (preorderItems.length > 0) {
+        itemsText += `⏳ BARANG PRE-ORDER:\n`;
+        preorderItems.forEach((item, index) => {
+            itemsText += `${item.nama} - ${item.quantity}x\n`;
+        });
+        itemsText += `\n`;
+    }
+    
+    // Tambahkan detail pesanan
+    itemsText += `DETAIL PESANAN:\n`;
+    itemsText += `===============\n\n`;
+    
+    filteredPesanan.forEach((pesanan, index) => {
+        const categoryItemsInPesanan = pesanan.items.filter(item => {
+            const barang = barangData.find(b => b.id === item.id);
+            return barang && barang.kategori === category;
+        });
+        
+        itemsText += `${index + 1}. ${pesanan.id} - ${pesanan.customer}\n`;
+        categoryItemsInPesanan.forEach(item => {
+            itemsText += `   • ${item.nama} - ${item.quantity}x\n`;
+        });
+        itemsText += `   Total: ${formatDollar(pesanan.total)}\n\n`;
+    });
+    
+    // Salin ke clipboard
+    navigator.clipboard.writeText(itemsText)
+        .then(() => {
+            showNotification(`Berhasil menyalin ${categoryItems.length} items ${category} dari ${filteredPesanan.length} pesanan!`, 'success');
+        })
+        .catch(err => {
+            console.error('Gagal menyalin teks: ', err);
+            fallbackCopyTextToClipboard(itemsText);
+        });
+}
+
 // Update export function dengan info bendahara
 function exportRincianSetoran() {
     const setoranMingguIni = hitungSetoranMingguIni();
@@ -9313,6 +9706,36 @@ function markAsGiven(pesananId) {
                 }
             );
         }
+
+        // Fungsi untuk filter pesanan berdasarkan kategori dengan pengecualian item yang sudah dikasih
+function filterPesananByCategory() {
+    const category = document.getElementById('filter-kategori-pesanan').value;
+    currentCategoryFilter = category;
+    
+    if (category === '') {
+        // Jika tidak ada filter, tampilkan semua
+        updatePesananUI();
+        hideCategoryFilterBadge();
+        return;
+    }
+    
+    // Filter pesanan yang mengandung barang dari kategori yang dipilih
+    // DAN hanya item yang BELUM dikasih
+    const filteredPesanan = pesananData.filter(pesanan => {
+        // Cek apakah pesanan memiliki item dari kategori yang dipilih yang BELUM dikasih
+        const hasUncheckedItems = pesanan.items.some(item => {
+            const barang = barangData.find(b => b.id === item.id);
+            return barang && 
+                   barang.kategori === category && 
+                   !item.sudah_dikasih; // HITUNG YANG BELUM DIKASIH
+        });
+        
+        return hasUncheckedItems;
+    });
+    
+    // Update UI dengan hasil filter
+    updatePesananUIWithCategoryFilter(filteredPesanan, category);
+}
 
         // Kosongkan keranjang - MODIFIED dengan modal kustom
         function kosongkanKeranjang() {
@@ -10412,6 +10835,7 @@ function showDetailUangBelumDikasih(penerima) {
                 <h4 style="margin-bottom: 1rem; color: var(--text-primary);">Daftar Pesanan</h4>
                 <div style="max-height: 400px; overflow-y: auto;">
     `;
+
     
     // Tambahkan setiap pesanan ke dalam list
     uangBelumDikasih.forEach((pesanan, index) => {
@@ -10462,6 +10886,269 @@ function showDetailUangBelumDikasih(penerima) {
     // Tampilkan modal
     document.getElementById('detail-pesanan-content').innerHTML = detailHtml;
     showModal('detail-pesanan-modal');
+}
+
+
+    // ===============================
+// FILTER TANGGAL UNTUK COPY PENDING
+// ===============================
+
+// Variabel untuk menyimpan filter tanggal
+let currentDateFilter = {
+    startDate: null,
+    endDate: null
+};
+
+// Fungsi untuk menampilkan modal filter tanggal
+function showDateFilterModal() {
+    // Reset form
+    document.getElementById('tanggal-mulai').value = '';
+    document.getElementById('tanggal-selesai').value = '';
+    currentDateFilter = { startDate: null, endDate: null };
+    
+    showModal('filter-tanggal-modal');
+}
+
+// Fungsi untuk menerapkan filter dan menyalin
+function applyDateFilterAndCopy() {
+    const startDate = document.getElementById('tanggal-mulai').value;
+    const endDate = document.getElementById('tanggal-selesai').value;
+    
+    // Validasi tanggal
+    if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
+        showNotification('Tanggal mulai tidak boleh lebih besar dari tanggal selesai!', 'error');
+        return;
+    }
+    
+    currentDateFilter = {
+        startDate: startDate || null,
+        endDate: endDate || null
+    };
+    
+    closeModal('filter-tanggal-modal');
+    copyFilteredPendingOrders();
+}
+
+// Fungsi untuk menyalin pesanan pending dengan filter tanggal
+function copyFilteredPendingOrders() {
+    // Filter pesanan yang belum diproses (belum dikasih) dengan filter tanggal
+    let pendingPesanan = pesananData.filter(p => !p.sudah_dikasih);
+    
+    // Apply date filter jika ada
+    if (currentDateFilter.startDate || currentDateFilter.endDate) {
+        pendingPesanan = pendingPesanan.filter(pesanan => {
+            const tanggalPesanan = new Date(pesanan.tanggal);
+            let isValid = true;
+            
+            if (currentDateFilter.startDate) {
+                const startDate = new Date(currentDateFilter.startDate);
+                startDate.setHours(0, 0, 0, 0);
+                isValid = isValid && tanggalPesanan >= startDate;
+            }
+            
+            if (currentDateFilter.endDate) {
+                const endDate = new Date(currentDateFilter.endDate);
+                endDate.setHours(23, 59, 59, 999);
+                isValid = isValid && tanggalPesanan <= endDate;
+            }
+            
+            return isValid;
+        });
+    }
+    
+    if (pendingPesanan.length === 0) {
+        let message = 'Tidak ada pesanan yang belum diproses';
+        if (currentDateFilter.startDate || currentDateFilter.endDate) {
+            message += ' dalam rentang tanggal yang dipilih';
+        }
+        showNotification(message + '!', 'info');
+        return;
+    }
+    
+    // Gabungkan semua items dari pesanan pending
+    const allItems = [];
+    
+    pendingPesanan.forEach(pesanan => {
+        pesanan.items.forEach(item => {
+            // Cek apakah item sudah ada di allItems
+            const existingItem = allItems.find(i => i.nama === item.nama);
+            
+            if (existingItem) {
+                // Jika sudah ada, tambahkan quantity
+                existingItem.quantity += item.quantity;
+            } else {
+                // Jika belum ada, tambahkan item baru
+                allItems.push({
+                    nama: item.nama,
+                    quantity: item.quantity,
+                    status: item.status
+                });
+            }
+        });
+    });
+    
+    if (allItems.length === 0) {
+        showNotification('Tidak ada items dalam pesanan pending!', 'info');
+        return;
+    }
+    
+    // Format teks untuk disalin
+    let itemsText = `ITEMS PESANAN PENDING`;
+    
+    // Tambahkan info filter tanggal jika ada
+    if (currentDateFilter.startDate || currentDateFilter.endDate) {
+        itemsText += ` (${formatFilterDateRange()})`;
+    }
+    
+    itemsText += `\n${pendingPesanan.length} pesanan\n\n`;
+    
+    // Kelompokkan items berdasarkan status
+    const readyItems = allItems.filter(item => item.status === 'ready');
+    const preorderItems = allItems.filter(item => item.status === 'preorder');
+    
+    // Tambahkan items READY
+    if (readyItems.length > 0) {
+        itemsText += `📦 BARANG READY:\n`;
+        readyItems.forEach((item, index) => {
+            itemsText += `${item.nama} - ${item.quantity}x\n`;
+        });
+        itemsText += `\n`;
+    }
+    
+    // Tambahkan items PRE-ORDER
+    if (preorderItems.length > 0) {
+        itemsText += `⏳ BARANG PRE-ORDER:\n`;
+        preorderItems.forEach((item, index) => {
+            itemsText += `${item.nama} - ${item.quantity}x\n`;
+        });
+        itemsText += `\n`;
+    }
+    
+    // Tambahkan ringkasan
+    itemsText += `-------------------\n`;
+    itemsText += `Total Items: ${allItems.length} jenis\n`;
+    itemsText += `Total Pesanan: ${pendingPesanan.length} pesanan\n`;
+    itemsText += `• Ready: ${readyItems.length} jenis\n`;
+    itemsText += `• Pre-order: ${preorderItems.length} jenis`;
+    
+    // Salin ke clipboard
+    navigator.clipboard.writeText(itemsText)
+        .then(() => {
+            let successMessage = `Berhasil menyalin ${allItems.length} items dari ${pendingPesanan.length} pesanan pending`;
+            if (currentDateFilter.startDate || currentDateFilter.endDate) {
+                successMessage += ` (${formatFilterDateRange()})`;
+            }
+            showNotification(successMessage + '!', 'success');
+        })
+        .catch(err => {
+            console.error('Gagal menyalin teks: ', err);
+            fallbackCopyTextToClipboard(itemsText);
+        });
+}
+
+// Fungsi untuk memformat rentang tanggal filter
+function formatFilterDateRange() {
+    if (!currentDateFilter.startDate && !currentDateFilter.endDate) {
+        return 'Semua Tanggal';
+    }
+    
+    const formatDate = (dateString) => {
+        return new Date(dateString).toLocaleDateString('id-ID', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+        });
+    };
+    
+    if (currentDateFilter.startDate && currentDateFilter.endDate) {
+        return `${formatDate(currentDateFilter.startDate)} - ${formatDate(currentDateFilter.endDate)}`;
+    } else if (currentDateFilter.startDate) {
+        return `Dari ${formatDate(currentDateFilter.startDate)}`;
+    } else {
+        return `Hingga ${formatDate(currentDateFilter.endDate)}`;
+    }
+}
+
+// Fungsi untuk menyalin semua pending (tanpa filter) - existing function diupdate
+function copyAllPendingOrders() {
+    currentDateFilter = { startDate: null, endDate: null };
+    
+    // Filter pesanan yang belum diproses (belum dikasih)
+    const pendingPesanan = pesananData.filter(p => !p.sudah_dikasih);
+    
+    if (pendingPesanan.length === 0) {
+        showNotification('Tidak ada pesanan yang belum diproses!', 'info');
+        return;
+    }
+    
+    // Gabungkan semua items dari pesanan pending
+    const allItems = [];
+    
+    pendingPesanan.forEach(pesanan => {
+        pesanan.items.forEach(item => {
+            // Cek apakah item sudah ada di allItems
+            const existingItem = allItems.find(i => i.nama === item.nama);
+            
+            if (existingItem) {
+                // Jika sudah ada, tambahkan quantity
+                existingItem.quantity += item.quantity;
+            } else {
+                // Jika belum ada, tambahkan item baru
+                allItems.push({
+                    nama: item.nama,
+                    quantity: item.quantity,
+                    status: item.status
+                });
+            }
+        });
+    });
+    
+    if (allItems.length === 0) {
+        showNotification('Tidak ada items dalam pesanan pending!', 'info');
+        return;
+    }
+    
+    // Format teks untuk disalin
+    let itemsText = `ITEMS PESANAN PENDING (${pendingPesanan.length} pesanan)\n\n`;
+    
+    // Kelompokkan items berdasarkan status
+    const readyItems = allItems.filter(item => item.status === 'ready');
+    const preorderItems = allItems.filter(item => item.status === 'preorder');
+    
+    // Tambahkan items READY
+    if (readyItems.length > 0) {
+        itemsText += `📦 BARANG READY:\n`;
+        readyItems.forEach((item, index) => {
+            itemsText += `${item.nama} - ${item.quantity}x\n`;
+        });
+        itemsText += `\n`;
+    }
+    
+    // Tambahkan items PRE-ORDER
+    if (preorderItems.length > 0) {
+        itemsText += `⏳ BARANG PRE-ORDER:\n`;
+        preorderItems.forEach((item, index) => {
+            itemsText += `${item.nama} - ${item.quantity}x\n`;
+        });
+        itemsText += `\n`;
+    }
+    
+    // Tambahkan ringkasan
+    itemsText += `-------------------\n`;
+    itemsText += `Total Items: ${allItems.length} jenis\n`;
+    itemsText += `Total Pesanan: ${pendingPesanan.length} pesanan\n`;
+    itemsText += `• Ready: ${readyItems.length} jenis\n`;
+    itemsText += `• Pre-order: ${preorderItems.length} jenis`;
+    
+    // Salin ke clipboard
+    navigator.clipboard.writeText(itemsText)
+        .then(() => {
+            showNotification(`Berhasil menyalin ${allItems.length} items dari ${pendingPesanan.length} pesanan pending!`, 'success');
+        })
+        .catch(err => {
+            console.error('Gagal menyalin teks: ', err);
+            fallbackCopyTextToClipboard(itemsText);
+        });
 }
 
 // Fungsi untuk mendapatkan kategori items dari pesanan
@@ -11000,20 +11687,34 @@ function clearPesananSearch() {
     hideSearchResults();
 }
 
-// Update fungsi updateSemuaPesananTable untuk menerima parameter
+// Update fungsi clearPesananSearch untuk membersihkan semua filter
+function clearAllFilters() {
+    document.getElementById('search-pesanan').value = '';
+    document.getElementById('filter-kategori-pesanan').value = '';
+    currentSearchTerm = '';
+    currentCategoryFilter = '';
+    updatePesananUI();
+    hideSearchResults();
+    hideCategoryFilterBadge();
+}
+
+// Update fungsi updateSemuaPesananTable untuk menampilkan badge kategori
 function updateSemuaPesananTable(pesananList = null) {
     const tableBody = document.getElementById('semua-pesanan-table');
-    const dataToShow = pesananList || pesananData;
+    const dataToShow = pesananList || (currentCategoryFilter ? 
+        pesananData.filter(p => hasCategory(p, currentCategoryFilter)) : 
+        pesananData
+    );
     
     if (dataToShow.length === 0) {
-        if (currentSearchTerm) {
+        if (currentSearchTerm || currentCategoryFilter) {
             tableBody.innerHTML = `
                 <tr>
                     <td colspan="8" class="empty-search-result">
                         <i class="fas fa-search"></i>
                         <h4>Tidak ditemukan hasil pencarian</h4>
-                        <p>Tidak ada pesanan untuk customer "${currentSearchTerm}"</p>
-                        <button class="btn btn-primary btn-sm" onclick="clearPesananSearch()">
+                        <p>Tidak ada pesanan yang sesuai dengan filter</p>
+                        <button class="btn btn-primary btn-sm" onclick="clearAllFilters()">
                             Tampilkan Semua Pesanan
                         </button>
                     </td>
@@ -11028,12 +11729,21 @@ function updateSemuaPesananTable(pesananList = null) {
     tableBody.innerHTML = dataToShow.map(pesanan => {
         const sisaHutang = pesanan.total - pesanan.uang_dibayar;
         const showCicilanButton = isAdmin && sisaHutang > 0;
+        const categoryBadges = renderCategoryBadges(pesanan);
         
         return `
             <tr class="${pesanan.sudah_dikasih ? 'pesanan-lunas' : 'pesanan-card'}">
-                <td>${pesanan.id}</td>
+                <td>
+                    <div style="font-weight: 600;">${pesanan.id}</div>
+                    ${categoryBadges}
+                </td>
                 <td>${formatDate(pesanan.tanggal)}</td>
-                <td>${pesanan.customer}</td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        ${pesanan.customer}
+                        ${currentSearchTerm ? highlightSearchTerm(pesanan.customer, currentSearchTerm) : ''}
+                    </div>
+                </td>
                 <td>${pesanan.items.length} item</td>
                 <td>${formatDollar(pesanan.total)}</td>
                 <td>
@@ -11069,6 +11779,16 @@ function updateSemuaPesananTable(pesananList = null) {
             </tr>
         `;
     }).join('');
+}
+
+// Helper function untuk mengecek apakah pesanan mengandung kategori tertentu (hanya yang belum dikasih)
+function hasCategoryUnchecked(pesanan, category) {
+    return pesanan.items.some(item => {
+        const barang = barangData.find(b => b.id === item.id);
+        return barang && 
+               barang.kategori === category && 
+               !item.sudah_dikasih; // HANYA YANG BELUM DIKASIH
+    });
 }
 
 // Fungsi untuk highlight teks pencarian
@@ -11597,6 +12317,40 @@ function updatePesananHutangTable(pesananList = null) {
             </button>
             <button class="btn btn-success" onclick="simpanJadwalOtomatis()">
                 <i class="fas fa-save"></i> Simpan Jadwal
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Filter Tanggal untuk Copy Pending -->
+<div class="modal" id="filter-tanggal-modal">
+    <div class="modal-content" style="max-width: 500px;">
+        <div class="modal-header">
+            <div class="modal-title">Filter Tanggal Pesanan Pending</div>
+            <button class="close-modal" onclick="closeModal('filter-tanggal-modal')">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="tanggal-mulai">Tanggal Mulai</label>
+                <input type="date" id="tanggal-mulai" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="tanggal-selesai">Tanggal Selesai</label>
+                <input type="date" id="tanggal-selesai" class="form-control">
+            </div>
+            <div class="info-section">
+                <h4>Informasi Filter</h4>
+                <p>Pilih rentang tanggal untuk memfilter pesanan pending. Jika tidak memilih tanggal, sistem akan menampilkan semua pesanan pending.</p>
+            </div>
+        </div>
+        <div class="modal-footer" style="padding: 1.5rem; border-top: 1px solid var(--dark-surface-light); display: flex; justify-content: flex-end; gap: 1rem;">
+            <button class="btn btn-secondary" onclick="closeModal('filter-tanggal-modal')">
+                <i class="fas fa-times"></i> Batal
+            </button>
+            <button class="btn btn-primary" onclick="applyDateFilterAndCopy()">
+                <i class="fas fa-copy"></i> Salin dengan Filter
             </button>
         </div>
     </div>
